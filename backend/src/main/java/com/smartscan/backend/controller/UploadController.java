@@ -25,13 +25,9 @@ public class UploadController {
     )
     public ResponseEntity<UploadResponseDto> uploadFile(
             @RequestParam("file") MultipartFile file,
-            @RequestParam(value = "teacherId", defaultValue = "1") Long teacherId,
-            @RequestParam(value = "studentName", defaultValue = "Arun") String studentName
+            @RequestParam("teacherId") Long teacherId,
+            @RequestParam("studentName") String studentName
     ) {
-        System.out.println("File received: " + file.getOriginalFilename());
-        System.out.println("TeacherId: " + teacherId);
-        System.out.println("StudentName: " + studentName);
-
         UploadResponseDto response = uploadService.uploadFile(file, teacherId, studentName);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
@@ -50,5 +46,15 @@ public class UploadController {
     public ResponseEntity<String> deleteUpload(@PathVariable Long id) {
         uploadService.deleteUpload(id);
         return ResponseEntity.ok("File deleted successfully");
+    }
+
+    @GetMapping("/teacher/{teacherId}")
+    public ResponseEntity<List<UploadResponseDto>> getUploadsByTeacherId(@PathVariable Long teacherId) {
+        return ResponseEntity.ok(uploadService.getUploadsByTeacherId(teacherId));
+    }
+
+    @GetMapping("/teacher/{teacherId}/count")
+    public ResponseEntity<Long> countUploadsByTeacherId(@PathVariable Long teacherId) {
+        return ResponseEntity.ok(uploadService.countUploadsByTeacherId(teacherId));
     }
 }

@@ -1,0 +1,81 @@
+.teacher-upload-page {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #e0f2fe, #f8fafc);
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.teacher-upload-card {
+  width: 100%;
+  max-width: 460px;
+  background: rgba(255, 255, 255, 0.96);
+  padding: 40px 32px;
+  border-radius: 20px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+}
+
+.teacher-upload-title {
+  margin: 0 0 8px;
+  text-align: center;
+  font-size: 28px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.teacher-upload-subtitle {
+  margin: 0 0 24px;
+  text-align: center;
+  font-size: 14px;
+  color: #64748b;
+}
+
+.teacher-upload-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.teacher-upload-form input {
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  font-size: 14px;
+  box-sizing: border-box;
+  outline: none;
+}
+
+.teacher-upload-form input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+.teacher-upload-btn {
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 14px;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.teacher-upload-btn:hover {
+  background: #1d4ed8;
+}
+
+.teacher-upload-btn:disabled {
+  background: #93c5fd;
+  cursor: not-allowed;
+}
+
+.teacher-upload-message {
+  margin-top: 18px;
+  text-align: center;
+  font-size: 14px;
+  color: #0f172a;
+}

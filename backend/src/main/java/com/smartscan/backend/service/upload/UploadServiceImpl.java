@@ -3,6 +3,8 @@ package com.smartscan.backend.service.upload;
 import com.smartscan.backend.dto.UploadResponseDto;
 import com.smartscan.backend.entity.AnswerSheet;
 import com.smartscan.backend.repository.AnswerSheetRepository;
+import com.smartscan.backend.repository.UserRepository;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -13,6 +15,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import com.smartscan.backend.entity.Role;
+import com.smartscan.backend.entity.User;
+import com.smartscan.backend.repository.UserRepository;
 
 @Service
 @RequiredArgsConstructor
@@ -20,13 +25,23 @@ public class UploadServiceImpl implements UploadService {
 
     private final AnswerSheetRepository answerSheetRepository;
     private static final String UPLOAD_DIR = "uploads";
+    private final UserRepository userRepository;
 
     @Override
-    public UploadResponseDto uploadFile(MultipartFile file, Long teacherId, String studentName) {
-        try {
-            if (file == null || file.isEmpty()) {
-                throw new RuntimeException("File is empty");
-            }
+public UploadResponseDto uploadFile(MultipartFile file, Long teacherId, String studentName) {
+    try {
+        if (file == null || file.isEmpty()) {
+            throw new RuntimeException("File is empty");
+        }
+
+        User teacher = userRepository.findById(teacherId)
+                .orElseThrow(() -> new RuntimeException("Enter correct teacherId"));
+
+        if (teacher.getRole() != Role.TEACHER) {
+            throw new RuntimeException("Entered ID does not belong to a teacher");
+        }
+
+        // save file logic here...
 
             Files.createDirectories(Paths.get(UPLOAD_DIR));
 
@@ -46,6 +61,12 @@ public class UploadServiceImpl implements UploadService {
                     .uploadTime(LocalDateTime.now())
                     .build();
 
+            //User teacher = userRepository.findById(teacherId)
+        //.orElseThrow(() -> new RuntimeException("Enter correct teacherId"));
+
+if (teacher.getRole() != Role.TEACHER) {
+    throw new RuntimeException("Entered ID does not belong to a teacher");
+}
             AnswerSheet saved = answerSheetRepository.save(answerSheet);
             return mapToDto(saved);
 
@@ -82,7 +103,18 @@ public class UploadServiceImpl implements UploadService {
 
         answerSheetRepository.delete(answerSheet);
     }
+@Override
+public List<UploadResponseDto> getUploadsByTeacherId(Long teacherId) {
+    return answerSheetRepository.findByTeacherId(teacherId)
+            .stream()
+            .map(this::mapToDto)
+            .toList();
+}
 
+@Override
+public long countUploadsByTeacherId(Long teacherId) {
+    return answerSheetRepository.countByTeacherId(teacherId);
+}
     private UploadResponseDto mapToDto(AnswerSheet answerSheet) {
         return UploadResponseDto.builder()
                 .id(answerSheet.getId())
@@ -93,5 +125,6 @@ public class UploadServiceImpl implements UploadService {
                 .status(answerSheet.getStatus())
                 .uploadTime(answerSheet.getUploadTime())
                 .build();
+
     }
 }
