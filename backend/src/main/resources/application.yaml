@@ -1,14 +1,14 @@
 server:
-  port: 8081 # keep your fix
+  port: 8081
 
 spring:
   application:
     name: backend
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/smartscan_db # use correct port
+    url: jdbc:postgresql://localhost:5433/smartscan_db
     username: postgres
-    password: Deeksha@112 # your actual password
+    password: Deeksha@112
     driver-class-name: org.postgresql.Driver
 
   jpa:
