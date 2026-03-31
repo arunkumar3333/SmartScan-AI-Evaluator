@@ -12,27 +12,21 @@ import "../styles/TeacherDashboardPage.css";
 const TeacherDashboardPage = () => {
   const navigate = useNavigate();
 
-  // State for logged-in teacher
   const [teacherId, setTeacherId] = useState("");
   const [teacherName, setTeacherName] = useState("");
 
-  // State for upload form
   const [studentName, setStudentName] = useState("");
   const [file, setFile] = useState(null);
 
-  // State for UI messages
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("");
 
-  // State for upload list and count
   const [uploads, setUploads] = useState([]);
   const [uploadCount, setUploadCount] = useState(0);
 
-  // Loading states
   const [loading, setLoading] = useState(false);
   const [pageLoading, setPageLoading] = useState(true);
 
-  // Load logged-in teacher info when page opens
   useEffect(() => {
     const user = getStoredUser();
 
@@ -47,7 +41,6 @@ const TeacherDashboardPage = () => {
     fetchTeacherData(user.id);
   }, [navigate]);
 
-  // Function to load teacher uploads and count
   const fetchTeacherData = async (id) => {
     try {
       setPageLoading(true);
@@ -55,8 +48,8 @@ const TeacherDashboardPage = () => {
       const uploadsData = await getUploadsByTeacherId(id);
       const countData = await getUploadCountByTeacherId(id);
 
-      setUploads(uploadsData);
-      setUploadCount(countData);
+      setUploads(uploadsData || []);
+      setUploadCount(countData || 0);
     } catch (error) {
       setMessage("Failed to load dashboard data");
       setMessageType("error");
@@ -65,7 +58,6 @@ const TeacherDashboardPage = () => {
     }
   };
 
-  // Convert backend date into readable format
   const formatDateTime = (dateTime) => {
     if (!dateTime) return "N/A";
 
@@ -81,20 +73,17 @@ const TeacherDashboardPage = () => {
     });
   };
 
-  // Handle file input
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
     setMessage("");
     setMessageType("");
   };
 
-  // Handle logout
   const handleLogout = () => {
     logoutUser();
     navigate("/login");
   };
 
-  // Handle upload form submit
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -120,13 +109,15 @@ const TeacherDashboardPage = () => {
       setMessage(`Upload successful: ${response.fileName || "File uploaded"}`);
       setMessageType("success");
 
-      // Clear form after upload
       setStudentName("");
       setFile(null);
       e.target.reset();
 
-      // Refresh teacher uploads and count
-      fetchTeacherData(teacherId);
+      await fetchTeacherData(teacherId);
+
+      if (response?.id) {
+        navigate(`/processing-status/${response.id}`);
+      }
     } catch (error) {
       setMessage(error.response?.data?.error || "Upload failed");
       setMessageType("error");
@@ -135,7 +126,6 @@ const TeacherDashboardPage = () => {
     }
   };
 
-  // Delete upload
   const handleDelete = async (id) => {
     const confirmDelete = window.confirm("Are you sure you want to delete this upload?");
     if (!confirmDelete) return;
@@ -146,7 +136,6 @@ const TeacherDashboardPage = () => {
       setMessage("Upload deleted successfully");
       setMessageType("success");
 
-      // Refresh data after delete
       fetchTeacherData(teacherId);
     } catch (error) {
       setMessage(error.response?.data?.error || "Delete failed");
@@ -198,9 +187,19 @@ const TeacherDashboardPage = () => {
 
             {file && <p className="file-name">Selected file: {file.name}</p>}
 
-            <button type="submit" disabled={loading}>
-              {loading ? "Uploading..." : "Upload"}
-            </button>
+            <div className="teacher-form-actions">
+              <button type="submit" disabled={loading}>
+                {loading ? "Uploading..." : "Upload"}
+              </button>
+
+              <button
+                type="button"
+                className="secondary-btn"
+                onClick={() => navigate("/teacher-upload-history")}
+              >
+                View Upload History
+              </button>
+            </div>
           </form>
 
           {message && (
@@ -236,8 +235,33 @@ const TeacherDashboardPage = () => {
                       <td>{item.fileName}</td>
                       <td>{item.status}</td>
                       <td>{formatDateTime(item.uploadTime)}</td>
-                      <td>
+                      <td className="table-actions">
                         <button
+                          type="button"
+                          className="view-btn"
+                          onClick={() => navigate(`/processing-status/${item.id}`)}
+                        >
+                          Status
+                        </button>
+
+                        <button
+                          type="button"
+                          className="view-btn"
+                          onClick={() => navigate(`/ocr-result/${item.id}`)}
+                        >
+                          OCR
+                        </button>
+
+                        <button
+                          type="button"
+                          className="view-btn"
+                          onClick={() => navigate(`/evaluation-result/${item.id}`)}
+                        >
+                          Evaluation
+                        </button>
+
+                        <button
+                          type="button"
                           className="delete-btn"
                           onClick={() => handleDelete(item.id)}
                         >

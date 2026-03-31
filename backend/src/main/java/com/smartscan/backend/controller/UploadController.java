@@ -32,17 +32,17 @@ public class UploadController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-    @GetMapping
+    @GetMapping("/all")
     public ResponseEntity<List<UploadResponseDto>> getAllUploads() {
         return ResponseEntity.ok(uploadService.getAllUploads());
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/id/{id}")
     public ResponseEntity<UploadResponseDto> getUploadById(@PathVariable Long id) {
         return ResponseEntity.ok(uploadService.getUploadById(id));
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/id/{id}")
     public ResponseEntity<String> deleteUpload(@PathVariable Long id) {
         uploadService.deleteUpload(id);
         return ResponseEntity.ok("File deleted successfully");

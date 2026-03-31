@@ -14,26 +14,18 @@ import "../styles/AdminDashboardPage.css";
 const AdminDashboardPage = () => {
   const navigate = useNavigate();
 
-  // Logged in admin name
   const [adminName, setAdminName] = useState("");
-
-  // Upload list
   const [uploads, setUploads] = useState([]);
-
-  // Teacher list
   const [teachers, setTeachers] = useState([]);
-
-  // Dashboard stats
   const [stats, setStats] = useState({
     totalUploads: 0,
     totalTeachers: 0,
   });
 
-  // UI message
+  const [activeSection, setActiveSection] = useState("overview");
+
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("");
-
-  // Loading state
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -48,7 +40,6 @@ const AdminDashboardPage = () => {
     fetchAdminData();
   }, [navigate]);
 
-  // Load admin data
   const fetchAdminData = async () => {
     try {
       setLoading(true);
@@ -68,7 +59,6 @@ const AdminDashboardPage = () => {
     }
   };
 
-  // Format upload time
   const formatDateTime = (dateTime) => {
     if (!dateTime) return "N/A";
 
@@ -83,13 +73,11 @@ const AdminDashboardPage = () => {
     });
   };
 
-  // Logout
   const handleLogout = () => {
     logoutUser();
     navigate("/login");
   };
 
-  // Delete upload
   const handleDeleteUpload = async (id) => {
     const confirmDelete = window.confirm("Are you sure you want to delete this upload?");
     if (!confirmDelete) return;
@@ -105,7 +93,6 @@ const AdminDashboardPage = () => {
     }
   };
 
-  // Approve teacher
   const handleApproveTeacher = async (teacherId) => {
     try {
       await approveTeacher(teacherId);
@@ -118,7 +105,6 @@ const AdminDashboardPage = () => {
     }
   };
 
-  // Disapprove teacher
   const handleDisapproveTeacher = async (teacherId) => {
     try {
       await disapproveTeacher(teacherId);
@@ -131,7 +117,6 @@ const AdminDashboardPage = () => {
     }
   };
 
-  // Remove teacher
   const handleRemoveTeacher = async (teacherId) => {
     const confirmDelete = window.confirm("Are you sure you want to remove this teacher?");
     if (!confirmDelete) return;
@@ -147,6 +132,9 @@ const AdminDashboardPage = () => {
     }
   };
 
+  const approvedTeachers = teachers.filter((teacher) => teacher.approved).length;
+  const pendingTeachers = teachers.filter((teacher) => !teacher.approved).length;
+
   return (
     <div className="admin-dashboard-page">
       <div className="admin-dashboard-container">
@@ -161,121 +149,160 @@ const AdminDashboardPage = () => {
           </button>
         </div>
 
-        <div className="admin-stats">
-          <div className="admin-stat-card">
-            <h3>Total Uploads</h3>
-            <p>{stats.totalUploads}</p>
-          </div>
+        <div className="admin-nav">
+          <button
+            className={activeSection === "overview" ? "active" : ""}
+            onClick={() => setActiveSection("overview")}
+          >
+            Overview
+          </button>
 
-          <div className="admin-stat-card">
-            <h3>Total Teachers</h3>
-            <p>{stats.totalTeachers}</p>
-          </div>
+          <button
+            className={activeSection === "teachers" ? "active" : ""}
+            onClick={() => setActiveSection("teachers")}
+          >
+            Teacher Management
+          </button>
+
+          <button
+            className={activeSection === "uploads" ? "active" : ""}
+            onClick={() => setActiveSection("uploads")}
+          >
+            Uploaded Sheets
+          </button>
         </div>
 
         {message && <p className={`admin-message ${messageType}`}>{message}</p>}
 
-        <div className="admin-card">
-          <h2>Teacher Management</h2>
-
-          {loading ? (
-            <p>Loading teachers...</p>
-          ) : teachers.length === 0 ? (
-            <p>No teachers found.</p>
-          ) : (
-            <div className="admin-table-wrapper">
-              <table className="admin-table">
-                <thead>
-                  <tr>
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Approved</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {teachers.map((teacher) => (
-                    <tr key={teacher.id}>
-                      <td>{teacher.id}</td>
-                      <td>{teacher.name}</td>
-                      <td>{teacher.email}</td>
-                      <td>{teacher.approved ? "Yes" : "Pending"}</td>
-                      <td>
-                        {!teacher.approved ? (
-                          <button
-                            className="approve-btn"
-                            onClick={() => handleApproveTeacher(teacher.id)}
-                          >
-                            Approve
-                          </button>
-                        ) : (
-                          <button
-                            className="disapprove-btn"
-                            onClick={() => handleDisapproveTeacher(teacher.id)}
-                          >
-                            Disapprove
-                          </button>
-                        )}
-
-                        <button
-                          className="delete-btn"
-                          onClick={() => handleRemoveTeacher(teacher.id)}
-                        >
-                          Remove
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+        {activeSection === "overview" && (
+          <div className="admin-stats">
+            <div className="admin-stat-card">
+              <h3>Total Uploads</h3>
+              <p>{stats.totalUploads}</p>
             </div>
-          )}
-        </div>
 
-        <div className="admin-card">
-          <h2>All Uploaded Sheets</h2>
-
-          {loading ? (
-            <p>Loading uploads...</p>
-          ) : uploads.length === 0 ? (
-            <p>No uploads found.</p>
-          ) : (
-            <div className="admin-table-wrapper">
-              <table className="admin-table">
-                <thead>
-                  <tr>
-                    <th>ID</th>
-                    <th>Student Name</th>
-                    <th>File Name</th>
-                    <th>Status</th>
-                    <th>Upload Time</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {uploads.map((item) => (
-                    <tr key={item.id}>
-                      <td>{item.id}</td>
-                      <td>{item.studentName}</td>
-                      <td>{item.fileName}</td>
-                      <td>{item.status}</td>
-                      <td>{formatDateTime(item.uploadTime)}</td>
-                      <td>
-                        <button
-                          className="delete-btn"
-                          onClick={() => handleDeleteUpload(item.id)}
-                        >
-                          Delete
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            <div className="admin-stat-card">
+              <h3>Total Teachers</h3>
+              <p>{stats.totalTeachers}</p>
             </div>
-          )}
-        </div>
+
+            <div className="admin-stat-card">
+              <h3>Approved Teachers</h3>
+              <p>{approvedTeachers}</p>
+            </div>
+
+            <div className="admin-stat-card">
+              <h3>Pending Teachers</h3>
+              <p>{pendingTeachers}</p>
+            </div>
+          </div>
+        )}
+
+        {activeSection === "teachers" && (
+          <div className="admin-card">
+            <h2>Teacher Management</h2>
+
+            {loading ? (
+              <p>Loading teachers...</p>
+            ) : teachers.length === 0 ? (
+              <p>No teachers found.</p>
+            ) : (
+              <div className="admin-table-wrapper">
+                <table className="admin-table">
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Name</th>
+                      <th>Email</th>
+                      <th>Approved</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {teachers.map((teacher) => (
+                      <tr key={teacher.id}>
+                        <td>{teacher.id}</td>
+                        <td>{teacher.name}</td>
+                        <td>{teacher.email}</td>
+                        <td>{teacher.approved ? "Yes" : "Pending"}</td>
+                        <td>
+                          {!teacher.approved ? (
+                            <button
+                              className="approve-btn"
+                              onClick={() => handleApproveTeacher(teacher.id)}
+                            >
+                              Approve
+                            </button>
+                          ) : (
+                            <button
+                              className="disapprove-btn"
+                              onClick={() => handleDisapproveTeacher(teacher.id)}
+                            >
+                              Disapprove
+                            </button>
+                          )}
+
+                          <button
+                            className="delete-btn"
+                            onClick={() => handleRemoveTeacher(teacher.id)}
+                          >
+                            Remove
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        )}
+
+        {activeSection === "uploads" && (
+          <div className="admin-card">
+            <h2>All Uploaded Sheets</h2>
+
+            {loading ? (
+              <p>Loading uploads...</p>
+            ) : uploads.length === 0 ? (
+              <p>No uploads found.</p>
+            ) : (
+              <div className="admin-table-wrapper">
+                <table className="admin-table">
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Student Name</th>
+                      <th>File Name</th>
+                      <th>Status</th>
+                      <th>Upload Time</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {uploads.map((item) => (
+                      <tr key={item.id}>
+                        <td>{item.id}</td>
+                        <td>{item.studentName}</td>
+                        <td>{item.fileName}</td>
+                        <td>{item.status}</td>
+                        <td>{formatDateTime(item.uploadTime)}</td>
+                        <td>
+                          <button
+                            className="delete-btn"
+                            onClick={() => handleDeleteUpload(item.id)}
+                          >
+                            Delete
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

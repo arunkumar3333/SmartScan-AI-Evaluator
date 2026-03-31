@@ -9,6 +9,11 @@ import AdminDashboardPage from "./pages/AdminDashboardPage";
 import NotFoundPage from "./pages/NotFoundPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 
+import ProcessingStatusPage from "./pages/ProcessingStatusPage";
+import OcrResultPage from "./pages/OcrResultPage";
+import EvaluationResultPage from "./pages/EvaluationResultPage";
+import TeacherUploadHistoryPage from "./pages/TeacherUploadHistoryPage";
+
 function App() {
   return (
     <BrowserRouter>
@@ -16,6 +21,11 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/login" element={<LoginPage />} />
+
+        <Route path="/teacher-upload-history" element={<TeacherUploadHistoryPage />} />
+        <Route path="/processing-status/:answerSheetId" element={<ProcessingStatusPage />} />
+        <Route path="/ocr-result/:answerSheetId" element={<OcrResultPage />} />
+        <Route path="/evaluation-result/:answerSheetId" element={<EvaluationResultPage />} />
 
         <Route
           path="/teacher"

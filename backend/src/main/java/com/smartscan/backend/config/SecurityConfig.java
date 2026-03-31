@@ -23,8 +23,11 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/upload/**").permitAll()
+                        .requestMatchers("/api/process/**").permitAll()
+                        .requestMatchers("/api/ocr/**").permitAll()
+                        .requestMatchers("/api/evaluation/**").permitAll()
                         .requestMatchers("/api/admin/**").permitAll()
+                        .requestMatchers("/api/upload/**").permitAll()
                         .anyRequest().authenticated()
                 );
 

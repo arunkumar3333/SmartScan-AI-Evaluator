@@ -1,0 +1,64 @@
+.evaluation-page {
+  min-height: 100vh;
+  background: #f8fafc;
+  padding: 30px;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.evaluation-container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.evaluation-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.evaluation-header h1 {
+  margin: 0;
+  color: #1e293b;
+}
+
+.evaluation-header button {
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.evaluation-card {
+  background: white;
+  border-radius: 18px;
+  padding: 24px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+.evaluation-card.error {
+  color: #dc2626;
+}
+
+.score-box {
+  margin-top: 20px;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: white;
+  border-radius: 16px;
+  padding: 24px;
+  text-align: center;
+}
+
+.score-box h2 {
+  margin: 0 0 10px;
+  font-size: 20px;
+}
+
+.score-box p {
+  margin: 0;
+  font-size: 42px;
+  font-weight: 800;
+}
