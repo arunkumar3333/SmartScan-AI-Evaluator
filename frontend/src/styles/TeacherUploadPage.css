@@ -1,3 +1,4 @@
+/* Full page background */
 .teacher-upload-page {
   min-height: 100vh;
   display: flex;
@@ -7,56 +8,70 @@
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
+/* Card container */
 .teacher-upload-card {
   width: 100%;
   max-width: 460px;
   background: rgba(255, 255, 255, 0.96);
-  padding: 40px 32px;
-  border-radius: 20px;
+  padding: 36px 30px;
+  border-radius: 18px;
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
 }
 
+/* Top bar (title + logout) */
+.teacher-upload-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+/* Title */
 .teacher-upload-title {
-  margin: 0 0 8px;
-  text-align: center;
-  font-size: 28px;
+  margin: 0;
+  font-size: 26px;
   font-weight: 700;
   color: #1e293b;
 }
 
+/* Subtitle */
 .teacher-upload-subtitle {
-  margin: 0 0 24px;
   text-align: center;
   font-size: 14px;
   color: #64748b;
+  margin-bottom: 20px;
 }
 
+/* Form layout */
 .teacher-upload-form {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 14px;
 }
 
+/* Inputs */
 .teacher-upload-form input {
   width: 100%;
-  padding: 14px 16px;
+  padding: 13px 15px;
   border: 1px solid #cbd5e1;
   border-radius: 10px;
   font-size: 14px;
-  box-sizing: border-box;
   outline: none;
+  transition: 0.2s ease;
 }
 
+/* Focus effect */
 .teacher-upload-form input:focus {
   border-color: #2563eb;
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
 }
 
+/* Upload button */
 .teacher-upload-btn {
   background: #2563eb;
   color: white;
   border: none;
-  padding: 14px;
+  padding: 13px;
   border-radius: 10px;
   font-size: 15px;
   font-weight: 600;
@@ -64,18 +79,55 @@
   transition: 0.3s ease;
 }
 
+/* Hover */
 .teacher-upload-btn:hover {
   background: #1d4ed8;
 }
 
+/* Disabled */
 .teacher-upload-btn:disabled {
   background: #93c5fd;
   cursor: not-allowed;
 }
 
+/* Logout button */
+.logout-btn {
+  background: #ef4444;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 13px;
+  transition: 0.2s;
+}
+
+.logout-btn:hover {
+  background: #dc2626;
+}
+
+/* File name text */
+.file-name {
+  font-size: 13px;
+  color: #475569;
+  margin-top: -6px;
+}
+
+/* Message (common) */
 .teacher-upload-message {
-  margin-top: 18px;
+  margin-top: 16px;
   text-align: center;
   font-size: 14px;
-  color: #0f172a;
+  font-weight: 600;
+}
+
+/* Success message */
+.teacher-upload-message.success {
+  color: #16a34a;
+}
+
+/* Error message */
+.teacher-upload-message.error {
+  color: #dc2626;
 }

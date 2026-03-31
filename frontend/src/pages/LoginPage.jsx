@@ -12,31 +12,47 @@ const LoginPage = () => {
   });
 
   const [message, setMessage] = useState("");
+  const [messageType, setMessageType] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
     });
+    setMessage("");
+    setMessageType("");
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setMessage("");
+    setMessageType("");
+
     try {
+      setLoading(true);
+
       const response = await loginUser(formData);
 
       localStorage.setItem("user", JSON.stringify(response));
       localStorage.setItem("token", response.token || "");
 
       setMessage(response.message || "Login successful");
-
+      setMessageType("success");
+  console.log("Login response:", response);
       if (response.role === "ADMIN") {
         navigate("/admin");
-      } else {
+      } else if (response.role === "TEACHER") {
         navigate("/teacher");
+      } else {
+        setMessage("Invalid user role");
+        setMessageType("error");
       }
     } catch (error) {
       setMessage(error.response?.data?.error || "Login failed");
+      setMessageType("error");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -65,10 +81,16 @@ const LoginPage = () => {
             required
           />
 
-          <button type="submit" className="login-btn">Login</button>
+          <button type="submit" className="login-btn" disabled={loading}>
+            {loading ? "Logging in..." : "Login"}
+          </button>
         </form>
 
-        {message && <p className="login-message">{message}</p>}
+        {message && (
+          <p className={`login-message ${messageType}`}>
+            {message}
+          </p>
+        )}
 
         <div className="login-footer">
           Don’t have an account? <Link to="/register">Register</Link>
