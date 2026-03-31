@@ -14,22 +14,38 @@ const RegisterPage = () => {
   });
 
   const [message, setMessage] = useState("");
+  const [messageType, setMessageType] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
     });
+    setMessage("");
+    setMessageType("");
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     try {
+      setLoading(true);
+
+      console.log("Register payload:", formData);
+
       const response = await registerUser(formData);
+
       setMessage(response.message || "Registration successful");
-      setTimeout(() => navigate("/login"), 1000);
+      setMessageType("success");
+
+      setTimeout(() => navigate("/login"), 1500);
     } catch (error) {
+      console.log("Register error:", error.response?.data || error.message);
       setMessage(error.response?.data?.error || "Registration failed");
+      setMessageType("error");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -67,15 +83,26 @@ const RegisterPage = () => {
             required
           />
 
-          <select name="role" value={formData.role} onChange={handleChange}>
+          <select
+            name="role"
+            value={formData.role}
+            onChange={handleChange}
+            required
+          >
             <option value="TEACHER">Teacher</option>
             <option value="ADMIN">Admin</option>
           </select>
 
-          <button type="submit" className="register-btn">Register</button>
+          <button type="submit" className="register-btn" disabled={loading}>
+            {loading ? "Registering..." : "Register"}
+          </button>
         </form>
 
-        {message && <p className="register-message">{message}</p>}
+        {message && (
+          <p className={`register-message ${messageType}`}>
+            {message}
+          </p>
+        )}
 
         <div className="register-footer">
           Already have an account? <Link to="/login">Login</Link>

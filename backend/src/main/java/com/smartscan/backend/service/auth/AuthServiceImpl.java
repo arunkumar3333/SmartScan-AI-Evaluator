@@ -7,6 +7,7 @@ import com.smartscan.backend.entity.Role;
 import com.smartscan.backend.entity.User;
 import com.smartscan.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -16,6 +17,7 @@ import java.time.LocalDateTime;
 public class AuthServiceImpl implements AuthService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public AuthResponseDto register(RegisterRequestDto request) {
@@ -33,8 +35,9 @@ public class AuthServiceImpl implements AuthService {
         User user = User.builder()
                 .name(request.getName())
                 .email(request.getEmail())
-                .password(request.getPassword())
+                .password(passwordEncoder.encode(request.getPassword()))
                 .role(role)
+                .approved(role == Role.ADMIN)
                 .createdAt(LocalDateTime.now())
                 .build();
 
@@ -46,7 +49,11 @@ public class AuthServiceImpl implements AuthService {
                 .email(savedUser.getEmail())
                 .role(savedUser.getRole().name())
                 .token("dummy-token")
-                .message("User registered successfully")
+                .message(
+                        savedUser.getRole() == Role.TEACHER
+                                ? "Registration successful. Wait for admin approval."
+                                : "Admin registered successfully"
+                )
                 .build();
     }
 
@@ -55,8 +62,12 @@ public class AuthServiceImpl implements AuthService {
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        if (!user.getPassword().equals(request.getPassword())) {
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new RuntimeException("Invalid password");
+        }
+
+        if (user.getRole() == Role.TEACHER && !user.isApproved()) {
+            throw new RuntimeException("Admin approval is pending");
         }
 
         return AuthResponseDto.builder()

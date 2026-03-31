@@ -1,4 +1,4 @@
-import axios from "axios";//for API callsnpm run dev
+import axios from "axios";
 
 const API_BASE_URL = "http://localhost:8080/api/auth";
 

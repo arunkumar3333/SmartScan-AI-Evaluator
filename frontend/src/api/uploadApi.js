@@ -37,4 +37,6 @@ export const getUploadCountByTeacherId = async (teacherId) => {
 export const deleteUploadById = async (id) => {
   const response = await axios.delete(`${UPLOAD_API}/${id}`);
   return response.data;
+
+  
 };

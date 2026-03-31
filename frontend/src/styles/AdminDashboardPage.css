@@ -84,3 +84,122 @@
   background: #f8fafc;
   color: #334155;
 }
+
+.admin-message {
+  margin-bottom: 16px;
+  font-weight: 600;
+}
+
+.admin-message.success {
+  color: #16a34a;
+}
+
+.admin-message.error {
+  color: #dc2626;
+}
+
+.approve-btn {
+  background: #16a34a;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-right: 8px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.approve-btn:hover {
+  background: #15803d;
+}
+
+.disapprove-btn {
+  background: #f59e0b;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-right: 8px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.disapprove-btn:hover {
+  background: #d97706;
+}
+
+.delete-btn {
+  background: #ef4444;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.delete-btn:hover {
+  background: #dc2626;
+}
+.admin-message {
+  margin-bottom: 16px;
+  font-weight: 600;
+}
+
+.admin-message.success {
+  color: #16a34a;
+}
+
+.admin-message.error {
+  color: #dc2626;
+}
+
+.approve-btn {
+  background: #16a34a;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-right: 8px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.approve-btn:hover {
+  background: #15803d;
+}
+
+.disapprove-btn {
+  background: #f59e0b;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-right: 8px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.disapprove-btn:hover {
+  background: #d97706;
+}
+
+.delete-btn {
+  background: #ef4444;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.delete-btn:hover {
+  background: #dc2626;
+}

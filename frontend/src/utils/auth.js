@@ -3,11 +3,11 @@ export const getStoredUser = () => {
   return user ? JSON.parse(user) : null;
 };
 
+export const getToken = () => {
+  return localStorage.getItem("token");
+};
+
 export const logoutUser = () => {
   localStorage.removeItem("user");
   localStorage.removeItem("token");
-};
-
-export const getToken = () => {
-  return localStorage.getItem("token");
 };
