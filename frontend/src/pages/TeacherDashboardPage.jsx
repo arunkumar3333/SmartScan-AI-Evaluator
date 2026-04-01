@@ -99,16 +99,17 @@ const TeacherDashboardPage = () => {
     const formData = new FormData();
     formData.append("teacherId", teacherId);
     formData.append("studentName", studentName);
-    formData.append("file", file);
+    formData.append("files", file);
 
     try {
       setLoading(true);
 
       const response = await uploadAnswerSheet(formData);
+      const data = response[0];
 
       setMessage(`Upload successful: ${response.fileName || "File uploaded"}`);
       setMessageType("success");
-
+      
       setStudentName("");
       setFile(null);
       e.target.reset();

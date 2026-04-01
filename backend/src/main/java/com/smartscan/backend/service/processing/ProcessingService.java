@@ -3,11 +3,14 @@ package com.smartscan.backend.service.processing;
 import com.smartscan.backend.entity.AnswerSheet;
 import com.smartscan.backend.repository.AnswerSheetRepository;
 import com.smartscan.backend.service.ocr.OcrService;
+import com.smartscan.backend.service.evaluation.EvaluationService;
 import com.smartscan.backend.util.PDFUtil;
+
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import com.smartscan.backend.service.evaluation.EvaluationService;
+
 import java.io.File;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -22,7 +25,8 @@ public class ProcessingService {
     private final ImageProcessingService imageService;
     private final EvaluationService evaluationService;
 
-    public AnswerSheet processAndSave(MultipartFile file, Long teacherId, String studentName) throws Exception {
+    // ✅ STEP 1: FAST UPLOAD (NO OCR HERE)
+    public AnswerSheet saveOnly(MultipartFile file, Long teacherId, String studentName) throws Exception {
 
         if (file == null || file.isEmpty()) {
             throw new RuntimeException("File is missing or empty");
@@ -30,9 +34,7 @@ public class ProcessingService {
 
         String uploadPath = System.getProperty("user.dir") + "/uploads/";
         File dir = new File(uploadPath);
-        if (!dir.exists()) {
-            dir.mkdirs();
-        }
+        if (!dir.exists()) dir.mkdirs();
 
         String originalName = file.getOriginalFilename();
         if (originalName == null || originalName.isBlank()) {
@@ -54,17 +56,26 @@ public class ProcessingService {
                 .uploadTime(LocalDateTime.now())
                 .build();
 
-        sheet = repository.save(sheet);
+        return repository.save(sheet);
+    }
+
+    // ✅ STEP 2: BACKGROUND PROCESSING (ASYNC)
+    @Async
+    public void processAsync(Long sheetId) {
 
         try {
+            AnswerSheet sheet = repository.findById(sheetId)
+                    .orElseThrow(() -> new RuntimeException("Answer sheet not found"));
+
             sheet.setStatus("PROCESSING");
-            sheet = repository.save(sheet);
+            repository.save(sheet);
 
+            File savedFile = new File(sheet.getFilePath());
+
+            // 📄 PDF → Image
             File fileToProcess;
-
-            if (fileName.toLowerCase().endsWith(".pdf")) {
+            if (sheet.getFileName().toLowerCase().endsWith(".pdf")) {
                 fileToProcess = PDFUtil.convertPdfToImage(savedFile);
-
                 if (fileToProcess == null || !fileToProcess.exists()) {
                     throw new RuntimeException("PDF conversion failed");
                 }
@@ -72,34 +83,43 @@ public class ProcessingService {
                 fileToProcess = savedFile;
             }
 
+            // 🖼 Image preprocessing
             File processed = imageService.preprocess(fileToProcess);
-
             if (processed == null || !processed.exists()) {
                 throw new RuntimeException("Image preprocessing failed");
             }
 
+            // 🔍 OCR
             String text = ocrService.extractText(processed);
-            if (text == null || text.trim().isEmpty()) {
-                text = "";
-            }
+            if (text == null) text = "";
 
+            // ✂️ Segmentation
             List<String> answers = segment(text);
+
+            // 🧠 Evaluation
             int score = evaluationService.evaluate(answers);
 
+            // 💾 Save results
             sheet.setExtractedText(text);
             sheet.setScore(score);
             sheet.setStatus("PROCESSED");
 
-            return repository.save(sheet);
+            repository.save(sheet);
 
         } catch (Exception e) {
-            sheet.setStatus("FAILED");
-            repository.save(sheet);
-            throw e;
+            e.printStackTrace();
+
+            AnswerSheet sheet = repository.findById(sheetId).orElse(null);
+            if (sheet != null) {
+                sheet.setStatus("FAILED");
+                repository.save(sheet);
+            }
         }
     }
 
+    // ✅ STEP 3: SEGMENTATION LOGIC
     public List<String> segment(String text) {
+
         List<String> answers = new ArrayList<>();
 
         if (text == null || text.trim().isEmpty()) {
@@ -108,15 +128,16 @@ public class ProcessingService {
 
         String[] parts = text.split("(?i)Question\\s*\\d+");
 
-        for (String p : parts) {
-            if (p.toLowerCase().contains("answer")) {
-                String[] ans = p.split("(?i)Answer:");
+        for (String part : parts) {
+            if (part.toLowerCase().contains("answer")) {
+                String[] ans = part.split("(?i)Answer:");
                 if (ans.length > 1) {
                     answers.add(ans[1].trim());
                 }
             }
         }
 
+        // fallback if no structured answers
         if (answers.isEmpty()) {
             answers.add(text.trim());
         }
