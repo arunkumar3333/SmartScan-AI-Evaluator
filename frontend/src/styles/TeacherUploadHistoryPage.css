@@ -1,0 +1,101 @@
+.teacher-history-page {
+  min-height: 100vh;
+  background: #f8fafc;
+  padding: 30px;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.teacher-history-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.teacher-history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.teacher-history-header h1 {
+  margin: 0;
+  color: #1e293b;
+}
+
+.teacher-history-header p {
+  margin: 6px 0 0;
+  color: #64748b;
+}
+
+.back-btn {
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.back-btn:hover {
+  background: #1d4ed8;
+}
+
+.history-message {
+  color: #dc2626;
+  margin-bottom: 16px;
+  font-weight: 600;
+}
+
+.history-loading,
+.history-empty {
+  background: white;
+  padding: 20px;
+  border-radius: 14px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+.history-table-wrapper {
+  overflow-x: auto;
+  background: white;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+.history-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.history-table th,
+.history-table td {
+  padding: 12px;
+  border-bottom: 1px solid #e2e8f0;
+  text-align: left;
+}
+
+.history-table th {
+  background: #f8fafc;
+  color: #334155;
+}
+
+.history-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.history-actions button {
+  background: #0f172a;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.history-actions button:hover {
+  background: #334155;
+}

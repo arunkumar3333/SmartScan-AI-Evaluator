@@ -1,7 +1,10 @@
-package com.smartscan.backend.service;
+package com.smartscan.backend.service.evaluation;
 
 import org.springframework.stereotype.Service;
-import java.util.*;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class EvaluationService {
@@ -15,13 +18,12 @@ public class EvaluationService {
     }
 
     public int evaluate(List<String> answers) {
-
         int score = 0;
 
         for (int i = 0; i < answers.size(); i++) {
             String correct = KEY.get(i + 1);
 
-            if (answers.get(i).contains(correct)) {
+            if (correct != null && answers.get(i).toUpperCase().contains(correct)) {
                 score++;
             }
         }

@@ -10,4 +10,6 @@ public interface UploadService {
     List<UploadResponseDto> getAllUploads();
     UploadResponseDto getUploadById(Long id);
     void deleteUpload(Long id);
+    List<UploadResponseDto> getUploadsByTeacherId(Long teacherId);
+long countUploadsByTeacherId(Long teacherId);
 }

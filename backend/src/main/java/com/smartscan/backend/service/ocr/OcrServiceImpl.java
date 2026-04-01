@@ -15,22 +15,12 @@ public class OcrServiceImpl implements OcrService {
     private final AnswerSheetRepository answerSheetRepository;
     private final Tesseract tesseract;
 
-    // ✅ Dev1 method
-    @Override
-    public String extractTextFromAnswerSheet(Long answerSheetId) {
-        AnswerSheet answerSheet = answerSheetRepository.findById(answerSheetId)
-                .orElseThrow(() -> new RuntimeException("Answer sheet not found with id: " + answerSheetId));
-
-        return "OCR extracted text from file: " + answerSheet.getFilePath();
-    }
-
-    // ✅ Dev1 method
     @Override
     public String getExtractedText(Long answerSheetId) {
         AnswerSheet answerSheet = answerSheetRepository.findById(answerSheetId)
                 .orElseThrow(() -> new RuntimeException("Answer sheet not found with id: " + answerSheetId));
 
-        return "OCR text for file: " + answerSheet.getFileName();
+        return answerSheet.getExtractedText() == null ? "" : answerSheet.getExtractedText();
     }
 
     @Override
