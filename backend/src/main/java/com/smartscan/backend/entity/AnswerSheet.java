@@ -27,7 +27,7 @@ public class AnswerSheet {
 
     private String status; // UPLOADED, PROCESSED
 
-    @Column(length = 5000) // 🔥 important for long OCR text
+    @Column(length = 5000) //  important for long OCR text
     private String extractedText;
 
     private Integer score;
