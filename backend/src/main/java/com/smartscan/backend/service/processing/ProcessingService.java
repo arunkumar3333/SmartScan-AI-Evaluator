@@ -84,22 +84,24 @@ public class ProcessingService {
             }
 
             // 🖼 Image preprocessing
-            File processed = imageService.preprocess(fileToProcess);
-            if (processed == null || !processed.exists()) {
-                throw new RuntimeException("Image preprocessing failed");
-            }
+            //File processed = imageService.preprocess(fileToProcess);
+            // if (processed == null || !processed.exists()) {
+            //     throw new RuntimeException("Image preprocessing failed");
+            // }
 
             // 🔍 OCR
-            String text = ocrService.extractText(processed);
+           // String text = ocrService.extractText(processed);
+                       String text = ocrService.extractText(fileToProcess);
+
             if (text == null) text = "";
 
-            // ✂️ Segmentation
+            //  Segmentation
             List<String> answers = segment(text);
 
-            // 🧠 Evaluation
+            //  Evaluation
             int score = evaluationService.evaluate(answers);
 
-            // 💾 Save results
+            // Save results
             sheet.setExtractedText(text);
             sheet.setScore(score);
             sheet.setStatus("PROCESSED");

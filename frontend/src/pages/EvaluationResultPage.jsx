@@ -32,7 +32,7 @@ const EvaluationResultPage = () => {
       <div className="evaluation-container">
         <div className="evaluation-header">
           <h1>Evaluation Result</h1>
-          <button onClick={() => navigate("/teacher-upload-history")}>Back</button>
+          <button onClick={() => navigate("/teacher-dashboard")}>Back</button>
         </div>
 
         {loading ? (
