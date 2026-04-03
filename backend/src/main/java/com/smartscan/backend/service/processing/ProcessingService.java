@@ -22,7 +22,6 @@ public class ProcessingService {
 
     private final AnswerSheetRepository repository;
     private final OcrService ocrService;
-    private final ImageProcessingService imageService;
     private final GraderService graderService;
 
     // ============================
@@ -91,7 +90,7 @@ public class ProcessingService {
             String text = ocrService.extractText(fileToProcess);
             if (text == null) text = "";
 
-            // Segmentation
+            // SEGMENT answers
             List<String> answers = segment(text);
 
             // AI Evaluation
@@ -104,7 +103,7 @@ public class ProcessingService {
                 totalScore += result.getScore();
             }
 
-            // Save results
+            // SAVE
             sheet.setExtractedText(text);
             sheet.setScore(totalScore);
             sheet.setStatus("PROCESSED");
@@ -123,7 +122,7 @@ public class ProcessingService {
     }
 
     // ============================
-    // STEP 3: PROCESS BY ID (API)
+    // STEP 3: PROCESS API (USED IN POSTMAN)
     // ============================
     public String process(Long answerSheetId) {
 
@@ -131,15 +130,15 @@ public class ProcessingService {
             AnswerSheet sheet = repository.findById(answerSheetId)
                     .orElseThrow(() -> new RuntimeException("Answer sheet not found"));
 
-            String extractedText = sheet.getExtractedText();
+            String text = sheet.getExtractedText();
 
-            if (extractedText == null || extractedText.isEmpty()) {
-                extractedText = ocrService.extractText(new File(sheet.getFilePath()));
+            if (text == null || text.isEmpty()) {
+                text = ocrService.extractText(new File(sheet.getFilePath()));
             }
 
             String modelAnswer = "Artificial Intelligence is the simulation of human intelligence in machines.";
 
-            GradingResult result = graderService.evaluate(extractedText, modelAnswer);
+            GradingResult result = graderService.evaluate(text, modelAnswer);
 
             sheet.setScore(result.getScore());
             sheet.setStatus("PROCESSED");
