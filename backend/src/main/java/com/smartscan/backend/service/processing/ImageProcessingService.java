@@ -1,7 +1,7 @@
 package com.smartscan.backend.service.processing;
+
 import nu.pattern.OpenCV;
-import org.opencv.core.Mat;
-import org.opencv.core.Size;
+import org.opencv.core.*;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 import org.springframework.stereotype.Service;
@@ -12,6 +12,7 @@ import java.io.File;
 public class ImageProcessingService {
 
     public File preprocess(File file) {
+
         OpenCV.loadLocally();
 
         Mat img = Imgcodecs.imread(file.getAbsolutePath());
@@ -20,14 +21,40 @@ public class ImageProcessingService {
             throw new RuntimeException("Failed to load image: " + file.getAbsolutePath());
         }
 
-        Imgproc.cvtColor(img, img, Imgproc.COLOR_BGR2GRAY);
-        Imgproc.GaussianBlur(img, img, new Size(5, 5), 0);
-        Imgproc.threshold(img, img, 0, 255, Imgproc.THRESH_BINARY + Imgproc.THRESH_OTSU);
+        // 🔹 Step 1: Convert to Grayscale
+        Mat gray = new Mat();
+        Imgproc.cvtColor(img, gray, Imgproc.COLOR_BGR2GRAY);
 
-        String outputPath = System.getProperty("user.dir") + "/uploads/processed_" + System.currentTimeMillis() + ".png";
+        // 🔹 Step 2: Noise Removal
+        Mat denoised = new Mat();
+        Imgproc.medianBlur(gray, denoised, 3);
+
+        // 🔹 Step 3: Sharpen Image
+        Mat sharpened = new Mat();
+        Mat kernel = new Mat(3, 3, CvType.CV_32F);
+        float[] data = {
+                0, -1, 0,
+                -1, 5, -1,
+                0, -1, 0
+        };
+        kernel.put(0, 0, data);
+        Imgproc.filter2D(denoised, sharpened, -1, kernel);
+
+        // 🔹 Step 4: Threshold (important for OCR)
+        Mat threshold = new Mat();
+        Imgproc.threshold(sharpened, threshold, 0, 255,
+                Imgproc.THRESH_BINARY + Imgproc.THRESH_OTSU);
+
+        // 🔹 Step 5: Resize (increase clarity)
+        Mat resized = new Mat();
+        Imgproc.resize(threshold, resized, new Size(), 2, 2, Imgproc.INTER_LINEAR);
+
+        // 🔹 Save processed image
+        String outputPath = System.getProperty("user.dir") +
+                "/uploads/processed_" + System.currentTimeMillis() + ".png";
+
         File output = new File(outputPath);
-
-        Imgcodecs.imwrite(output.getAbsolutePath(), img);
+        Imgcodecs.imwrite(output.getAbsolutePath(), resized);
 
         return output;
     }

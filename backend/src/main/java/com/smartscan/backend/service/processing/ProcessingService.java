@@ -1,5 +1,6 @@
 package com.smartscan.backend.service.processing;
 
+import com.smartscan.backend.dto.GradingResult;
 import com.smartscan.backend.entity.AnswerSheet;
 import com.smartscan.backend.repository.AnswerSheetRepository;
 import com.smartscan.backend.service.ocr.OcrService;
@@ -7,7 +8,7 @@ import com.smartscan.backend.util.PDFUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import com.smartscan.backend.service.evaluation.EvaluationService;
+
 import java.io.File;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -20,8 +21,11 @@ public class ProcessingService {
     private final AnswerSheetRepository repository;
     private final OcrService ocrService;
     private final ImageProcessingService imageService;
-    private final EvaluationService evaluationService;
+    private final GraderService graderService;
 
+    // ============================
+    // UPLOAD + PROCESS
+    // ============================
     public AnswerSheet processAndSave(MultipartFile file, Long teacherId, String studentName) throws Exception {
 
         if (file == null || file.isEmpty()) {
@@ -58,7 +62,7 @@ public class ProcessingService {
 
         try {
             sheet.setStatus("PROCESSING");
-            sheet = repository.save(sheet);
+            repository.save(sheet);
 
             File fileToProcess;
 
@@ -79,15 +83,21 @@ public class ProcessingService {
             }
 
             String text = ocrService.extractText(processed);
-            if (text == null || text.trim().isEmpty()) {
-                text = "";
-            }
+            if (text == null) text = "";
 
             List<String> answers = segment(text);
-            int score = evaluationService.evaluate(answers);
+
+            String modelAnswer = "Artificial Intelligence is the simulation of human intelligence in machines.";
+
+            int totalScore = 0;
+
+            for (String ans : answers) {
+                GradingResult result = graderService.evaluate(ans, modelAnswer);
+                totalScore += result.getScore();
+            }
 
             sheet.setExtractedText(text);
-            sheet.setScore(score);
+            sheet.setScore(totalScore);
             sheet.setStatus("PROCESSED");
 
             return repository.save(sheet);
@@ -99,7 +109,44 @@ public class ProcessingService {
         }
     }
 
+    // ============================
+    // PROCESS BY ID (FIXED)
+    // ============================
+    public String process(Long answerSheetId) {
+
+        try {
+            AnswerSheet sheet = repository.findById(answerSheetId)
+                    .orElseThrow(() -> new RuntimeException("Answer sheet not found"));
+
+            String extractedText = sheet.getExtractedText();
+
+            if (extractedText == null || extractedText.isEmpty()) {
+                extractedText = ocrService.extractText(new File(sheet.getFilePath()));
+            }
+
+            String modelAnswer = "Artificial Intelligence is the simulation of human intelligence in machines.";
+
+            GradingResult result = graderService.evaluate(extractedText, modelAnswer);
+
+            sheet.setScore(result.getScore());
+            sheet.setStatus("PROCESSED");
+
+            repository.save(sheet);
+
+            return "Score: " + result.getScore()
+                    + "\nFeedback: " + result.getFeedback()
+                    + "\nSimilarity: " + Math.round(result.getSimilarity() * 100) + "%";
+
+        } catch (Exception e) {
+            throw new RuntimeException("Processing failed: " + e.getMessage());
+        }
+    }
+
+    // ============================
+    // SEGMENTATION
+    // ============================
     public List<String> segment(String text) {
+
         List<String> answers = new ArrayList<>();
 
         if (text == null || text.trim().isEmpty()) {
