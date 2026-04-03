@@ -32,7 +32,7 @@ const OcrResultPage = () => {
       <div className="ocr-container">
         <div className="ocr-header">
           <h1>OCR Result</h1>
-          <button onClick={() => navigate("/teacher-upload-history")}>Back</button>
+          <button onClick={() => navigate("/teacher-dashboard")}>Back</button>
         </div>
 
         {loading ? (

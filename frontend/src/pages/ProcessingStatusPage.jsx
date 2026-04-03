@@ -32,7 +32,7 @@ const ProcessingStatusPage = () => {
       <div className="status-container">
         <div className="status-header">
           <h1>Processing Status</h1>
-          <button onClick={() => navigate("/teacher-upload-history")}>Back</button>
+          <button onClick={() => navigate("/teacher-dashboard")}>Back</button>
         </div>
 
         {loading ? (

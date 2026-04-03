@@ -23,6 +23,7 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
 
         <Route path="/teacher-upload-history" element={<TeacherUploadHistoryPage />} />
+        <Route path="/teacher-dashboard" element={<TeacherDashboardPage />} />
         <Route path="/processing-status/:answerSheetId" element={<ProcessingStatusPage />} />
         <Route path="/ocr-result/:answerSheetId" element={<OcrResultPage />} />
         <Route path="/evaluation-result/:answerSheetId" element={<EvaluationResultPage />} />

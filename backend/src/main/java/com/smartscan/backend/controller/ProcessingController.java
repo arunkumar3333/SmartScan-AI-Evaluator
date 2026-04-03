@@ -34,16 +34,18 @@ public class ProcessingController {
                 continue;
             }
 
-            AnswerSheet sheet = processingService.processAndSave(file, teacherId, studentName);
+            // AnswerSheet sheet = processingService.processAndSave(file, teacherId, studentName);
+            AnswerSheet sheet = processingService.saveOnly(file, teacherId, studentName);
+            // 🔥 background processing
+            processingService.processAsync(sheet.getId());
 
             results.add(
-                    ProcessingResponseDto.builder()
-                            .id(sheet.getId())
-                            .fileName(sheet.getFileName())
-                            .status(sheet.getStatus())
-                            .score(sheet.getScore())
-                            .build()
-            );
+    ProcessingResponseDto.builder()
+        .id(sheet.getId())
+        .fileName(sheet.getFileName())
+        .status("UPLOADED")
+        .build()
+);
         }
 
         return results;

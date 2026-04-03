@@ -16,8 +16,24 @@ public class OcrServiceImpl implements OcrService {
 
     private final AnswerSheetRepository answerSheetRepository;
 
+    // ✅ Apply config ONCE (constructor or init)
+    private void configureTesseract() {
+        tesseract.setPageSegMode(1); // automatic segmentation
+        tesseract.setOcrEngineMode(3); // best engine
+        tesseract.setVariable("user_defined_dpi", "300");
+
+        // tesseract.setVariable("tessedit_char_whitelist",
+        //         "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.,:-() ");
+    }
+
     @Override
     public String getExtractedText(Long answerSheetId) {
+<<<<<<< HEAD
+=======
+
+        AnswerSheet answerSheet = answerSheetRepository.findById(answerSheetId)
+                .orElseThrow(() -> new RuntimeException("Answer sheet not found with id: " + answerSheetId));
+>>>>>>> origin/dev1
 
         AnswerSheet sheet = answerSheetRepository.findById(answerSheetId)
                 .orElseThrow(() -> new RuntimeException("Answer sheet not found: " + answerSheetId));
@@ -26,6 +42,7 @@ public class OcrServiceImpl implements OcrService {
     }
 
     @Override
+<<<<<<< HEAD
     public String extractText(File file) {
 
         if (file == null || !file.exists()) {
@@ -64,5 +81,12 @@ public class OcrServiceImpl implements OcrService {
         } catch (TesseractException e) {
             throw new RuntimeException("OCR failed: " + e.getMessage());
         }
+=======
+    public String extractText(File file) throws Exception {
+
+        configureTesseract(); // ✅ IMPORTANT
+
+        return tesseract.doOCR(file);
+>>>>>>> origin/dev1
     }
 }
