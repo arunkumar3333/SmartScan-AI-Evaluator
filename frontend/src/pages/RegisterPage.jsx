@@ -10,7 +10,7 @@ const RegisterPage = () => {
     name: "",
     email: "",
     password: "",
-    role: "TEACHER",
+    role: "Teacher",
   });
 
   const [message, setMessage] = useState("");
@@ -99,9 +99,7 @@ const RegisterPage = () => {
         </form>
 
         {message && (
-          <p className={`register-message ${messageType}`}>
-            {message}
-          </p>
+          <p className={`register-message ${messageType}`}>{message}</p>
         )}
 
         <div className="register-footer">

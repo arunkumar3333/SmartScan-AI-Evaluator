@@ -44,17 +44,23 @@ public class SecurityConfig {
     // ✅ SECURITY CONFIG
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+
         http
+
                 .csrf(csrf -> csrf.disable())
                 .cors(Customizer.withDefaults()) // enable CORS
+                .csrf(csrf -> csrf.disable()) // disable CSRF (important)
+                .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/process/**").permitAll()
-                        .requestMatchers("/api/ocr/**").permitAll()
-                        .requestMatchers("/api/evaluation/**").permitAll()
-                        .requestMatchers("/api/admin/**").permitAll()
-                        .requestMatchers("/api/upload/**").permitAll()
-                        .anyRequest().authenticated()
+                        .requestMatchers(
+                                "/api/auth/**",
+                                "/api/process/**",
+                                "/api/ocr/**",
+                                "/api/evaluation/**",
+                                "/api/admin/**",
+                                "/api/upload/**"
+                        ).permitAll()
+                        .anyRequest().permitAll() 
                 );
 
         return http.build();

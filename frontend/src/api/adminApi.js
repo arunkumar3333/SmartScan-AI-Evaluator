@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const ADMIN_API = "http://localhost:8080/api/admin";
+const ADMIN_API = "http://localhost:8081/api/admin";
 
 // Get admin dashboard stats
 export const getAdminDashboardStats = async () => {
@@ -22,13 +22,17 @@ export const getPendingTeachers = async () => {
 
 // Approve teacher
 export const approveTeacher = async (teacherId) => {
-  const response = await axios.put(`${ADMIN_API}/teachers/${teacherId}/approve`);
+  const response = await axios.put(
+    `${ADMIN_API}/teachers/${teacherId}/approve`,
+  );
   return response.data;
 };
 
 // Disapprove teacher
 export const disapproveTeacher = async (teacherId) => {
-  const response = await axios.put(`${ADMIN_API}/teachers/${teacherId}/disapprove`);
+  const response = await axios.put(
+    `${ADMIN_API}/teachers/${teacherId}/disapprove`,
+  );
   return response.data;
 };
 

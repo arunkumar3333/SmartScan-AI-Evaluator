@@ -1,7 +1,11 @@
 import axios from "axios";
 
+<<<<<<< HEAD
 const PROCESS_API = "http://localhost:8080/api/process";
 const UPLOAD_API = "http://localhost:8080/api/upload";
+=======
+const UPLOAD_API = "http://localhost:8081/api/upload";
+>>>>>>> origin/dev2
 
 // ✅ Upload (PROCESS)
 export const uploadAnswerSheet = async (formData) => {
