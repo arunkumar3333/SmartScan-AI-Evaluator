@@ -16,24 +16,8 @@ public class OcrServiceImpl implements OcrService {
 
     private final AnswerSheetRepository answerSheetRepository;
 
-    // ✅ Apply config ONCE (constructor or init)
-    private void configureTesseract() {
-        tesseract.setPageSegMode(1); // automatic segmentation
-        tesseract.setOcrEngineMode(3); // best engine
-        tesseract.setVariable("user_defined_dpi", "300");
-
-        // tesseract.setVariable("tessedit_char_whitelist",
-        //         "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.,:-() ");
-    }
-
     @Override
     public String getExtractedText(Long answerSheetId) {
-<<<<<<< HEAD
-=======
-
-        AnswerSheet answerSheet = answerSheetRepository.findById(answerSheetId)
-                .orElseThrow(() -> new RuntimeException("Answer sheet not found with id: " + answerSheetId));
->>>>>>> origin/dev1
 
         AnswerSheet sheet = answerSheetRepository.findById(answerSheetId)
                 .orElseThrow(() -> new RuntimeException("Answer sheet not found: " + answerSheetId));
@@ -42,7 +26,6 @@ public class OcrServiceImpl implements OcrService {
     }
 
     @Override
-<<<<<<< HEAD
     public String extractText(File file) {
 
         if (file == null || !file.exists()) {
@@ -52,24 +35,21 @@ public class OcrServiceImpl implements OcrService {
         try {
             ITesseract tesseract = new Tesseract();
 
-            //  IMPORTANT: Update if your path is different
+            // IMPORTANT: change if your path differs
             tesseract.setDatapath("C:/Program Files/Tesseract-OCR/tessdata");
 
-            // Language
             tesseract.setLanguage("eng");
 
-            //  UPDATED (non-deprecated method)
             tesseract.setVariable("user_defined_dpi", "300");
             tesseract.setVariable("preserve_interword_spaces", "1");
 
-            // Better recognition modes
-            tesseract.setOcrEngineMode(1);  // LSTM
-            tesseract.setPageSegMode(3);   // Fully automatic page segmentation
+            tesseract.setOcrEngineMode(1);
+            tesseract.setPageSegMode(3);
 
             String result = tesseract.doOCR(file);
 
-            // Clean result
-            result = result.replaceAll("[^\\x00-\\x7F]", ""); // remove weird chars
+            // Clean output
+            result = result.replaceAll("[^\\x00-\\x7F]", "");
             result = result.replaceAll("\\s+", " ").trim();
 
             System.out.println("\n========= OCR OUTPUT =========");
@@ -81,12 +61,5 @@ public class OcrServiceImpl implements OcrService {
         } catch (TesseractException e) {
             throw new RuntimeException("OCR failed: " + e.getMessage());
         }
-=======
-    public String extractText(File file) throws Exception {
-
-        configureTesseract(); // ✅ IMPORTANT
-
-        return tesseract.doOCR(file);
->>>>>>> origin/dev1
     }
 }
