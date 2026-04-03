@@ -28,7 +28,10 @@ public class AnswerSheet {
     // UPLOADED, PROCESSING, PROCESSED, FAILED
     private String status;
 
+
+
     @Column(length = 10000)
+
     private String extractedText;
 
     private Integer score;
