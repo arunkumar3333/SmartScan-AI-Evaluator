@@ -1,6 +1,5 @@
 package com.smartscan.backend.service.processing;
 
-import com.smartscan.backend.dto.GradingResult;
 import com.smartscan.backend.entity.AnswerSheet;
 import com.smartscan.backend.repository.AnswerSheetRepository;
 import com.smartscan.backend.service.ocr.OcrService;
@@ -24,17 +23,10 @@ public class ProcessingService {
     private final AnswerSheetRepository repository;
     private final OcrService ocrService;
     private final ImageProcessingService imageService;
-    private final GraderService graderService;
-
+    private final EvaluationService evaluationService;
 
     // ✅ STEP 1: FAST UPLOAD (NO OCR HERE)
     public AnswerSheet saveOnly(MultipartFile file, Long teacherId, String studentName) throws Exception {
-
-    // ============================
-    // UPLOAD + PROCESS
-    // ============================
-    public AnswerSheet processAndSave(MultipartFile file, Long teacherId, String studentName) throws Exception {
-
 
         if (file == null || file.isEmpty()) {
             throw new RuntimeException("File is missing or empty");
@@ -80,7 +72,7 @@ public class ProcessingService {
 
             File savedFile = new File(sheet.getFilePath());
 
-            // PDF → Image
+            // 📄 PDF → Image
             File fileToProcess;
             if (sheet.getFileName().toLowerCase().endsWith(".pdf")) {
                 fileToProcess = PDFUtil.convertPdfToImage(savedFile);
@@ -90,34 +82,28 @@ public class ProcessingService {
             } else {
                 fileToProcess = savedFile;
             }
+
+            // 🖼 Image preprocessing
+            //File processed = imageService.preprocess(fileToProcess);
+            // if (processed == null || !processed.exists()) {
+            //     throw new RuntimeException("Image preprocessing failed");
+            // }
+
+            // 🔍 OCR
+           // String text = ocrService.extractText(processed);
                        String text = ocrService.extractText(fileToProcess);
-
-
-
-            String text = ocrService.extractText(processed);
 
             if (text == null) text = "";
 
             //  Segmentation
             List<String> answers = segment(text);
 
-
             //  Evaluation
             int score = evaluationService.evaluate(answers);
 
-            String modelAnswer = "Artificial Intelligence is the simulation of human intelligence in machines.";
-
-            int totalScore = 0;
-
-            for (String ans : answers) {
-                GradingResult result = graderService.evaluate(ans, modelAnswer);
-                totalScore += result.getScore();
-            }
-
-
             // Save results
             sheet.setExtractedText(text);
-            sheet.setScore(totalScore);
+            sheet.setScore(score);
             sheet.setStatus("PROCESSED");
 
             repository.save(sheet);
@@ -133,45 +119,7 @@ public class ProcessingService {
         }
     }
 
-
     // ✅ STEP 3: SEGMENTATION LOGIC
-
-    // ============================
-    // PROCESS BY ID (FIXED)
-    // ============================
-    public String process(Long answerSheetId) {
-
-        try {
-            AnswerSheet sheet = repository.findById(answerSheetId)
-                    .orElseThrow(() -> new RuntimeException("Answer sheet not found"));
-
-            String extractedText = sheet.getExtractedText();
-
-            if (extractedText == null || extractedText.isEmpty()) {
-                extractedText = ocrService.extractText(new File(sheet.getFilePath()));
-            }
-
-            String modelAnswer = "Artificial Intelligence is the simulation of human intelligence in machines.";
-
-            GradingResult result = graderService.evaluate(extractedText, modelAnswer);
-
-            sheet.setScore(result.getScore());
-            sheet.setStatus("PROCESSED");
-
-            repository.save(sheet);
-
-            return "Score: " + result.getScore()
-                    + "\nFeedback: " + result.getFeedback()
-                    + "\nSimilarity: " + Math.round(result.getSimilarity() * 100) + "%";
-
-        } catch (Exception e) {
-            throw new RuntimeException("Processing failed: " + e.getMessage());
-        }
-    }
-
-    // ============================
-    // SEGMENTATION
-    // ============================
     public List<String> segment(String text) {
 
         List<String> answers = new ArrayList<>();
