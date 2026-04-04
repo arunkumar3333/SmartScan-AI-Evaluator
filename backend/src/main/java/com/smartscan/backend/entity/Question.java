@@ -22,4 +22,5 @@ public class Question {
     private String modelAnswer;
 
     private Long teacherId;
+    private String title; // e.g., "Science - Chapter 1"
 }
