@@ -3,9 +3,7 @@ package com.smartscan.backend.service.ocr;
 import com.smartscan.backend.entity.AnswerSheet;
 import com.smartscan.backend.repository.AnswerSheetRepository;
 import lombok.RequiredArgsConstructor;
-import net.sourceforge.tess4j.ITesseract;
 import net.sourceforge.tess4j.Tesseract;
-import net.sourceforge.tess4j.TesseractException;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -15,17 +13,22 @@ import java.io.File;
 public class OcrServiceImpl implements OcrService {
 
     private final AnswerSheetRepository answerSheetRepository;
+    private final Tesseract tesseract;
 
     @Override
     public String getExtractedText(Long answerSheetId) {
+<<<<<<< HEAD
+=======
 
-        AnswerSheet sheet = answerSheetRepository.findById(answerSheetId)
-                .orElseThrow(() -> new RuntimeException("Answer sheet not found: " + answerSheetId));
+        AnswerSheet answerSheet = answerSheetRepository.findById(answerSheetId)
+                .orElseThrow(() -> new RuntimeException("Answer sheet not found with id: " + answerSheetId));
+>>>>>>> dev1
 
-        return sheet.getExtractedText() == null ? "" : sheet.getExtractedText();
+        return answerSheet.getExtractedText() == null ? "" : answerSheet.getExtractedText();
     }
 
     @Override
+<<<<<<< HEAD
     public String extractText(File file) {
 
         if (file == null || !file.exists()) {
@@ -61,5 +64,12 @@ public class OcrServiceImpl implements OcrService {
         } catch (TesseractException e) {
             throw new RuntimeException("OCR failed: " + e.getMessage());
         }
+=======
+    public String extractText(File file) throws Exception {
+
+        configureTesseract(); // ✅ IMPORTANT
+
+        return tesseract.doOCR(file);
+>>>>>>> dev1
     }
 }

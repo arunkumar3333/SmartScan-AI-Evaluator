@@ -1,7 +1,7 @@
 package com.smartscan.backend.service.processing;
 
 import com.smartscan.backend.dto.GradingResult;
-import com.smartscan.backend.service.ai.LangChainAiService;
+import com.smartscan.backend.service.ai.OllamaService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -10,22 +10,24 @@ import org.springframework.stereotype.Service;
 public class GraderService {
 
     private final SimilarityService similarityService;
-    private final FeedbackService feedbackService;
-    private final LangChainAiService aiService;
+    private final OllamaService ollamaService;
 
-    public GradingResult evaluate(String student, String model) {
+    public GradingResult evaluate(String studentAnswer, String modelAnswer) {
 
-        double similarity = similarityService.calculate(student, model);
+        // ✅ 1. Similarity
+        double similarity = similarityService.cosineSimilarity(studentAnswer, modelAnswer);
+        int similarityScore = (int) Math.round(similarity * 10);
 
-        int score = (int) Math.round(similarity * 10);
+        // ✅ 2. LLM feedback (this now returns structured response)
+        var aiResponse = ollamaService.generateFeedback(studentAnswer, modelAnswer);
 
-        String aiFeedback = aiService.evaluate(student, model);
+        int llmScore = (int) aiResponse.get("llmScore");
 
-        return new GradingResult(
-                similarity,
-                score,
-                aiFeedback,
-                score >= 5 ? "Pass" : "Fail"
-        );
+        // ✅ 3. Final score
+        int finalScore = (llmScore + similarityScore) / 2;
+
+        String feedback = (String) aiResponse.get("feedback");
+
+        return new GradingResult(similarity, finalScore, feedback);
     }
 }

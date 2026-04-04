@@ -5,12 +5,11 @@ import com.smartscan.backend.dto.ProcessingResponseDto;
 import com.smartscan.backend.dto.ProcessingStatusResponseDto;
 import com.smartscan.backend.entity.AnswerSheet;
 import com.smartscan.backend.repository.AnswerSheetRepository;
-
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.ArrayList;
 
 @RestController
 @RequestMapping("/api/process")
@@ -20,18 +19,20 @@ public class ProcessingController {
     private final ProcessingService processingService;
     private final AnswerSheetRepository answerSheetRepository;
 
-    // ✅ MANUAL CONSTRUCTOR (NO LOMBOK)
+    // MANUAL CONSTRUCTOR
     public ProcessingController(ProcessingService processingService,
                                 AnswerSheetRepository answerSheetRepository) {
         this.processingService = processingService;
         this.answerSheetRepository = answerSheetRepository;
     }
 
+    // MULTI-FILE UPLOAD 
     @PostMapping("/upload")
-    public List<ProcessingResponseDto> uploadMultiple(
-            @RequestParam("files") MultipartFile[] files,
+    public List<ProcessingResponseDto> upload(
+            @RequestParam("file") MultipartFile[] files, // Changed to Array to support the loop
             @RequestParam(value = "teacherId", required = false) Long teacherId,
-            @RequestParam(value = "studentName", required = false, defaultValue = "Unknown Student") String studentName
+            @RequestParam(value = "studentName", defaultValue = "Unknown Student") String studentName,
+            @RequestParam("questionId") Long questionId
     ) throws Exception {
 
         List<ProcessingResponseDto> results = new ArrayList<>();
@@ -51,10 +52,10 @@ public class ProcessingController {
                             .build()
             );
         }
+        return results; // Added the missing return statement
+    } // Added the missing closing bracket for the method
 
-        return results;
-    }
-
+    // CHECK PROCESSING STATUS
     @GetMapping("/status/{answerSheetId}")
     public ProcessingStatusResponseDto getProcessingStatus(@PathVariable Long answerSheetId) {
 
@@ -68,7 +69,7 @@ public class ProcessingController {
                 .build();
     }
 
-    // 🔥 IMPORTANT API
+    // PROCESS API
     @GetMapping("/{id}")
     public String process(@PathVariable Long id) {
         return processingService.process(id);

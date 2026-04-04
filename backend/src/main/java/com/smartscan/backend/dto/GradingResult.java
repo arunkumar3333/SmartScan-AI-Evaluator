@@ -1,12 +1,10 @@
 package com.smartscan.backend.dto;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Getter
-@Setter
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class GradingResult {
@@ -14,5 +12,4 @@ public class GradingResult {
     private double similarity;
     private int score;
     private String feedback;
-    private String status;
 }

@@ -3,6 +3,7 @@ package com.smartscan.backend.service.processing;
 import com.smartscan.backend.dto.GradingResult;
 import com.smartscan.backend.entity.AnswerSheet;
 import com.smartscan.backend.repository.AnswerSheetRepository;
+import com.smartscan.backend.repository.QuestionRepository;
 import com.smartscan.backend.service.ocr.OcrService;
 import com.smartscan.backend.util.PDFUtil;
 
@@ -15,20 +16,26 @@ import java.io.File;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
 @Service
 @RequiredArgsConstructor
 public class ProcessingService {
 
+    private final GraderService graderService;
     private final AnswerSheetRepository repository;
     private final OcrService ocrService;
+<<<<<<< HEAD
     private final GraderService graderService;
 
     // ============================
     // STEP 1: UPLOAD ONLY
     // ============================
     public AnswerSheet saveOnly(MultipartFile file, Long teacherId, String studentName) throws Exception {
+=======
+    private final ImageProcessingService imageService; // ✅ FIXED
+    private final QuestionRepository questionRepository;
+>>>>>>> dev1
 
+public AnswerSheet saveOnly(MultipartFile file, Long teacherId, String studentName, Long questionId) throws Exception {
         if (file == null || file.isEmpty()) {
             throw new RuntimeException("File is missing or empty");
         }
@@ -54,6 +61,7 @@ public class ProcessingService {
                 .fileType(file.getContentType())
                 .filePath(savedFile.getAbsolutePath())
                 .status("UPLOADED")
+                .questionId(questionId)
                 .uploadTime(LocalDateTime.now())
                 .build();
 
@@ -62,9 +70,12 @@ public class ProcessingService {
         
     }
 
+<<<<<<< HEAD
     // ============================
     // STEP 2: BACKGROUND PROCESSING
     // ============================
+=======
+>>>>>>> dev1
     @Async
     public void processAsync(Long sheetId) {
 
@@ -81,13 +92,11 @@ public class ProcessingService {
             File fileToProcess;
             if (sheet.getFileName().toLowerCase().endsWith(".pdf")) {
                 fileToProcess = PDFUtil.convertPdfToImage(savedFile);
-                if (fileToProcess == null || !fileToProcess.exists()) {
-                    throw new RuntimeException("PDF conversion failed");
-                }
             } else {
                 fileToProcess = savedFile;
             }
 
+<<<<<<< HEAD
             // OCR
             String text = ocrService.extractText(fileToProcess);
             if (text == null) text = "";
@@ -97,17 +106,45 @@ public class ProcessingService {
 
             // AI Evaluation
             String modelAnswer = "Artificial Intelligence is the simulation of human intelligence in machines.";
+=======
+            // ✅ PREPROCESS + OCR
+            File processedFile = imageService.preprocess(fileToProcess);
+            String text = ocrService.extractText(processedFile);
 
-            int totalScore = 0;
+            if (text == null) text = "";
 
+            // ✅ CLEAN TEXT
+            text = text.replaceAll("[^a-zA-Z0-9\\s]", " ");
+            text = text.replaceAll("\\s+", " ").trim();
+
+            // Segmentation
+            List<String> answers = segment(text);
+
+            String studentAnswer = String.join(" ", answers);
+>>>>>>> dev1
+
+            //String modelAnswer = "Artificial Intelligence is the simulation of human intelligence in machines.";
+            String modelAnswer = questionRepository
+        .findById(sheet.getQuestionId())
+        .orElseThrow(() -> new RuntimeException("Question not found"))
+        .getModelAnswer();
+            // AI grading
+            GradingResult result = graderService.evaluate(studentAnswer, modelAnswer);
+
+<<<<<<< HEAD
             for (String ans : answers) {
                 GradingResult result = graderService.evaluate(ans, modelAnswer);
                 totalScore += result.getScore();
             }
 
             // SAVE
+=======
+            // Save
+>>>>>>> dev1
             sheet.setExtractedText(text);
-            sheet.setScore(totalScore);
+            sheet.setScore(result.getScore());
+            sheet.setSimilarity(result.getSimilarity());
+            sheet.setFeedback(result.getFeedback());
             sheet.setStatus("PROCESSED");
 
             repository.save(sheet);
@@ -123,6 +160,7 @@ public class ProcessingService {
         }
     }
 
+<<<<<<< HEAD
     // ============================
     // STEP 3: PROCESS API (USED IN POSTMAN)
     // ============================
@@ -159,6 +197,8 @@ public class ProcessingService {
     // ============================
     // SEGMENTATION LOGIC
     // ============================
+=======
+>>>>>>> dev1
     public List<String> segment(String text) {
 
         List<String> answers = new ArrayList<>();

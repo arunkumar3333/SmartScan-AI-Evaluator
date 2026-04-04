@@ -1,44 +1,51 @@
 package com.smartscan.backend.service.processing;
 
 import org.springframework.stereotype.Service;
-import java.util.*;
 
+import java.util.*;
 @Service
 public class SimilarityService {
 
-    public double calculate(String text1, String text2) {
+    private static final Set<String> STOP_WORDS = Set.of(
+            "is", "the", "of", "and", "a", "to", "in", "that", "it", "on", "for"
+    );
 
-        Map<String, Integer> freq1 = getFreq(text1);
-        Map<String, Integer> freq2 = getFreq(text2);
+    public double cosineSimilarity(String text1, String text2) {
 
-        Set<String> words = new HashSet<>();
-        words.addAll(freq1.keySet());
-        words.addAll(freq2.keySet());
+        Map<String, Integer> freq1 = getWordFreq(text1);
+        Map<String, Integer> freq2 = getWordFreq(text2);
 
-        int dot = 0, norm1 = 0, norm2 = 0;
+        Set<String> allWords = new HashSet<>();
+        allWords.addAll(freq1.keySet());
+        allWords.addAll(freq2.keySet());
 
-        for (String w : words) {
-            int v1 = freq1.getOrDefault(w, 0);
-            int v2 = freq2.getOrDefault(w, 0);
+        double dot = 0, mag1 = 0, mag2 = 0;
+
+        for (String word : allWords) {
+            int v1 = freq1.getOrDefault(word, 0);
+            int v2 = freq2.getOrDefault(word, 0);
 
             dot += v1 * v2;
-            norm1 += v1 * v1;
-            norm2 += v2 * v2;
+            mag1 += v1 * v1;
+            mag2 += v2 * v2;
         }
 
-        if (norm1 == 0 || norm2 == 0) return 0;
+        if (mag1 == 0 || mag2 == 0) return 0;
 
-        return dot / (Math.sqrt(norm1) * Math.sqrt(norm2));
+        return dot / (Math.sqrt(mag1) * Math.sqrt(mag2));
     }
 
-    private Map<String, Integer> getFreq(String text) {
+    private Map<String, Integer> getWordFreq(String text) {
         Map<String, Integer> map = new HashMap<>();
 
-        for (String w : text.toLowerCase().split("\\W+")) {
-            if (!w.isEmpty()) {
-                map.put(w, map.getOrDefault(w, 0) + 1);
+        String[] words = text.toLowerCase().split("\\W+");
+
+        for (String word : words) {
+            if (!word.isBlank() && !STOP_WORDS.contains(word)) {
+                map.put(word, map.getOrDefault(word, 0) + 1);
             }
         }
+
         return map;
     }
 }
