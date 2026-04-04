@@ -57,7 +57,9 @@ public class ProcessingService {
                 .uploadTime(LocalDateTime.now())
                 .build();
 
+                processAsync(sheet.getId());
         return repository.save(sheet);
+        
     }
 
     // ============================

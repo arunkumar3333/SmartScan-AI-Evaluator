@@ -1,10 +1,11 @@
 package com.smartscan.backend.controller;
+
 import com.smartscan.backend.service.processing.ProcessingService;
 import com.smartscan.backend.dto.ProcessingResponseDto;
 import com.smartscan.backend.dto.ProcessingStatusResponseDto;
 import com.smartscan.backend.entity.AnswerSheet;
 import com.smartscan.backend.repository.AnswerSheetRepository;
-import lombok.RequiredArgsConstructor;
+
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -13,12 +14,18 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/process")
-@RequiredArgsConstructor
 @CrossOrigin(origins = "*")
 public class ProcessingController {
 
     private final ProcessingService processingService;
     private final AnswerSheetRepository answerSheetRepository;
+
+    // ✅ MANUAL CONSTRUCTOR (NO LOMBOK)
+    public ProcessingController(ProcessingService processingService,
+                                AnswerSheetRepository answerSheetRepository) {
+        this.processingService = processingService;
+        this.answerSheetRepository = answerSheetRepository;
+    }
 
     @PostMapping("/upload")
     public List<ProcessingResponseDto> uploadMultiple(
@@ -30,22 +37,19 @@ public class ProcessingController {
         List<ProcessingResponseDto> results = new ArrayList<>();
 
         for (MultipartFile file : files) {
-            if (file == null || file.isEmpty()) {
-                continue;
-            }
+            if (file == null || file.isEmpty()) continue;
 
-            // AnswerSheet sheet = processingService.processAndSave(file, teacherId, studentName);
             AnswerSheet sheet = processingService.saveOnly(file, teacherId, studentName);
-            // 🔥 background processing
             processingService.processAsync(sheet.getId());
 
             results.add(
-    ProcessingResponseDto.builder()
-        .id(sheet.getId())
-        .fileName(sheet.getFileName())
-        .status("UPLOADED")
-        .build()
-);
+                    ProcessingResponseDto.builder()
+                            .id(sheet.getId())
+                            .fileName(sheet.getFileName())
+                            .status(sheet.getStatus())
+                            .score(sheet.getScore())
+                            .build()
+            );
         }
 
         return results;
@@ -53,6 +57,7 @@ public class ProcessingController {
 
     @GetMapping("/status/{answerSheetId}")
     public ProcessingStatusResponseDto getProcessingStatus(@PathVariable Long answerSheetId) {
+
         AnswerSheet sheet = answerSheetRepository.findById(answerSheetId)
                 .orElseThrow(() -> new RuntimeException("Answer sheet not found"));
 
@@ -61,5 +66,11 @@ public class ProcessingController {
                 .fileName(sheet.getFileName())
                 .status(sheet.getStatus())
                 .build();
+    }
+
+    // 🔥 IMPORTANT API
+    @GetMapping("/{id}")
+    public String process(@PathVariable Long id) {
+        return processingService.process(id);
     }
 }

@@ -16,7 +16,7 @@ export const getAllUploads = async () => {
   const response = await axios.get("http://localhost:8081/api/upload/all");
   return response.data;
 };
-// ✅ Dashboard (UPLOAD)
+// Dashboard (UPLOAD)
 export const getUploadsByTeacherId = async (teacherId) => {
   const response = await axios.get(`${UPLOAD_API}/teacher/${teacherId}`);
   return response.data;
