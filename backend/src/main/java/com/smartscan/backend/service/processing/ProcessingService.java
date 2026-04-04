@@ -1,9 +1,10 @@
 package com.smartscan.backend.service.processing;
 
+import com.smartscan.backend.dto.GradingResult;
 import com.smartscan.backend.entity.AnswerSheet;
 import com.smartscan.backend.repository.AnswerSheetRepository;
+import com.smartscan.backend.repository.QuestionRepository;
 import com.smartscan.backend.service.ocr.OcrService;
-import com.smartscan.backend.service.evaluation.EvaluationService;
 import com.smartscan.backend.util.PDFUtil;
 
 import lombok.RequiredArgsConstructor;
@@ -15,19 +16,17 @@ import java.io.File;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
 @Service
 @RequiredArgsConstructor
 public class ProcessingService {
 
+    private final GraderService graderService;
     private final AnswerSheetRepository repository;
     private final OcrService ocrService;
-    private final ImageProcessingService imageService;
-    private final EvaluationService evaluationService;
+    private final ImageProcessingService imageService; // ✅ FIXED
+    private final QuestionRepository questionRepository;
 
-    // ✅ STEP 1: FAST UPLOAD (NO OCR HERE)
-    public AnswerSheet saveOnly(MultipartFile file, Long teacherId, String studentName) throws Exception {
-
+public AnswerSheet saveOnly(MultipartFile file, Long teacherId, String studentName, Long questionId) throws Exception {
         if (file == null || file.isEmpty()) {
             throw new RuntimeException("File is missing or empty");
         }
@@ -53,13 +52,13 @@ public class ProcessingService {
                 .fileType(file.getContentType())
                 .filePath(savedFile.getAbsolutePath())
                 .status("UPLOADED")
+                .questionId(questionId)
                 .uploadTime(LocalDateTime.now())
                 .build();
 
         return repository.save(sheet);
     }
 
-    // ✅ STEP 2: BACKGROUND PROCESSING (ASYNC)
     @Async
     public void processAsync(Long sheetId) {
 
@@ -72,38 +71,42 @@ public class ProcessingService {
 
             File savedFile = new File(sheet.getFilePath());
 
-            // 📄 PDF → Image
+            // PDF → Image
             File fileToProcess;
             if (sheet.getFileName().toLowerCase().endsWith(".pdf")) {
                 fileToProcess = PDFUtil.convertPdfToImage(savedFile);
-                if (fileToProcess == null || !fileToProcess.exists()) {
-                    throw new RuntimeException("PDF conversion failed");
-                }
             } else {
                 fileToProcess = savedFile;
             }
 
-            // 🖼 Image preprocessing
-            //File processed = imageService.preprocess(fileToProcess);
-            // if (processed == null || !processed.exists()) {
-            //     throw new RuntimeException("Image preprocessing failed");
-            // }
-
-            // 🔍 OCR
-           // String text = ocrService.extractText(processed);
-                       String text = ocrService.extractText(fileToProcess);
+            // ✅ PREPROCESS + OCR
+            File processedFile = imageService.preprocess(fileToProcess);
+            String text = ocrService.extractText(processedFile);
 
             if (text == null) text = "";
 
-            //  Segmentation
+            // ✅ CLEAN TEXT
+            text = text.replaceAll("[^a-zA-Z0-9\\s]", " ");
+            text = text.replaceAll("\\s+", " ").trim();
+
+            // Segmentation
             List<String> answers = segment(text);
 
-            //  Evaluation
-            int score = evaluationService.evaluate(answers);
+            String studentAnswer = String.join(" ", answers);
 
-            // Save results
+            //String modelAnswer = "Artificial Intelligence is the simulation of human intelligence in machines.";
+            String modelAnswer = questionRepository
+        .findById(sheet.getQuestionId())
+        .orElseThrow(() -> new RuntimeException("Question not found"))
+        .getModelAnswer();
+            // AI grading
+            GradingResult result = graderService.evaluate(studentAnswer, modelAnswer);
+
+            // Save
             sheet.setExtractedText(text);
-            sheet.setScore(score);
+            sheet.setScore(result.getScore());
+            sheet.setSimilarity(result.getSimilarity());
+            sheet.setFeedback(result.getFeedback());
             sheet.setStatus("PROCESSED");
 
             repository.save(sheet);
@@ -119,7 +122,6 @@ public class ProcessingService {
         }
     }
 
-    // ✅ STEP 3: SEGMENTATION LOGIC
     public List<String> segment(String text) {
 
         List<String> answers = new ArrayList<>();
@@ -139,7 +141,6 @@ public class ProcessingService {
             }
         }
 
-        // fallback if no structured answers
         if (answers.isEmpty()) {
             answers.add(text.trim());
         }

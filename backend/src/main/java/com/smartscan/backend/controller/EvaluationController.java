@@ -3,6 +3,7 @@ package com.smartscan.backend.controller;
 import com.smartscan.backend.dto.EvaluationResultResponseDto;
 import com.smartscan.backend.entity.AnswerSheet;
 import com.smartscan.backend.repository.AnswerSheetRepository;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,13 +17,16 @@ public class EvaluationController {
 
     @GetMapping("/{answerSheetId}")
     public EvaluationResultResponseDto getEvaluationResult(@PathVariable Long answerSheetId) {
+
         AnswerSheet sheet = answerSheetRepository.findById(answerSheetId)
                 .orElseThrow(() -> new RuntimeException("Answer sheet not found"));
 
         return EvaluationResultResponseDto.builder()
                 .answerSheetId(sheet.getId())
                 .fileName(sheet.getFileName())
-                .score(sheet.getScore() == null ? 0 : sheet.getScore())
+                .score(sheet.getScore())
+                .similarity(sheet.getSimilarity())
+                .feedback(sheet.getFeedback())
                 .status(sheet.getStatus())
                 .build();
     }

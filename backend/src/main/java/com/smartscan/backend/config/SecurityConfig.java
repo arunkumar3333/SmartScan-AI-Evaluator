@@ -54,6 +54,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/evaluation/**").permitAll()
                         .requestMatchers("/api/admin/**").permitAll()
                         .requestMatchers("/api/upload/**").permitAll()
+                        .requestMatchers("/api/test/**").permitAll()
+                        .requestMatchers("/api/questions/**").permitAll() 
                         .anyRequest().authenticated()
                 );
 
