@@ -312,33 +312,7 @@ const exportModelPDF = (questionId) => {
                   <h2>{uploadCount}</h2>
                 </div>
               </div>
-              {/* MODEL-WISE ANALYSIS */}
-<div className="card">
-  <h3>Model-wise Analysis</h3>
-  <table className="upload-table">
-    <thead>
-      <tr>
-        <th>Model</th>
-        <th>Total</th>
-        <th>Avg Score</th>
-        <th>Actions</th>    
-      </tr>
-    </thead>
-    <tbody>
-      {modelWiseData.map((m, i) => (
-        <tr key={i}>
-          <td>{m.model}</td>
-          <td>{m.total}</td>
-          <td>{m.avgScore}</td>
-          <td>
-              <button className="primary-btn" onClick={() => exportModelCSV(m.questionId)}>CSV</button>
-              <button className="primary-btn" onClick={() => exportModelPDF(m.questionId)}>PDF</button>
-          </td>
-        </tr>
-      ))}
-    </tbody>
-  </table>
-</div>
+              
 
 {/* EXPORT BUTTONS */}
 <div style={{ marginTop: "20px" }}>
@@ -416,6 +390,33 @@ const exportModelPDF = (questionId) => {
                   </ResponsiveContainer>
                 </div>
               </div>
+              {/* MODEL-WISE ANALYSIS */}
+<div className="card">
+  <h3>Model-wise Analysis</h3>
+  <table className="upload-table">
+    <thead>
+      <tr>
+        <th>Model</th>
+        <th>Total</th>
+        <th>Avg Score</th>
+        <th>Actions</th>    
+      </tr>
+    </thead>
+    <tbody>
+      {modelWiseData.map((m, i) => (
+        <tr key={i}>
+          <td>{m.model}</td>
+          <td>{m.total}</td>
+          <td>{m.avgScore}</td>
+          <td>
+              <button className="primary-btn" onClick={() => exportModelCSV(m.questionId)}>CSV</button>
+              <button className="primary-btn" onClick={() => exportModelPDF(m.questionId)}>PDF</button>
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
             </>
           )}
 
