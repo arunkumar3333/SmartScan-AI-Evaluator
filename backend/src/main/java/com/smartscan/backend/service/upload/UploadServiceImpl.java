@@ -116,15 +116,21 @@ public long countUploadsByTeacherId(Long teacherId) {
     return answerSheetRepository.countByTeacherId(teacherId);
 }
     private UploadResponseDto mapToDto(AnswerSheet answerSheet) {
-        return UploadResponseDto.builder()
-                .id(answerSheet.getId())
-                .studentName(answerSheet.getStudentName())
-                .fileName(answerSheet.getFileName())
-                .fileType(answerSheet.getFileType())
-                .filePath(answerSheet.getFilePath())
-                .status(answerSheet.getStatus())
-                .uploadTime(answerSheet.getUploadTime())
-                .build();
+    return UploadResponseDto.builder()
+            .id(answerSheet.getId())
+            .studentName(answerSheet.getStudentName())
+            .fileName(answerSheet.getFileName())
+            .fileType(answerSheet.getFileType())
+            .filePath(answerSheet.getFilePath())
+            .status(answerSheet.getStatus())
+            .uploadTime(answerSheet.getUploadTime())
 
-    }
+            // ✅ FIXED
+            .score(answerSheet.getScore())
+            .llmScore(answerSheet.getLlmScore())
+            .similarity(answerSheet.getSimilarity())
+            .feedback(answerSheet.getFeedback())
+
+            .build();
+}
 }

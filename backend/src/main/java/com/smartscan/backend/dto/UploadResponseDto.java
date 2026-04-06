@@ -20,4 +20,9 @@ public class UploadResponseDto {
     private String filePath;
     private String status;
     private LocalDateTime uploadTime;
+
+    private Integer score;
+    private Integer llmScore;
+    private Double similarity;
+    private String feedback;
 }

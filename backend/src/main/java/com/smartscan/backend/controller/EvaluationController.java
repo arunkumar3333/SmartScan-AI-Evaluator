@@ -26,6 +26,7 @@ public class EvaluationController {
                 .fileName(sheet.getFileName())
                 .score(sheet.getScore())
                 .similarity(sheet.getSimilarity())
+                .llmScore(sheet.getLlmScore()) 
                 .feedback(sheet.getFeedback())
                 .status(sheet.getStatus())
                 .build();

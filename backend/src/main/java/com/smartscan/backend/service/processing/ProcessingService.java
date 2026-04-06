@@ -11,7 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
+import java.util.Map;
+import com.smartscan.backend.service.ai.OllamaService;
 import java.io.File;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -25,12 +26,13 @@ public class ProcessingService {
     private final OcrService ocrService;
     private final ImageProcessingService imageService; // ✅ FIXED
     private final QuestionRepository questionRepository;
+    private final OllamaService ollamaService; 
 
 public AnswerSheet saveOnly(MultipartFile file, Long teacherId, String studentName, Long questionId) throws Exception {
         if (file == null || file.isEmpty()) {
             throw new RuntimeException("File is missing or empty");
         }
-
+        
         String uploadPath = System.getProperty("user.dir") + "/uploads/";
         File dir = new File(uploadPath);
         if (!dir.exists()) dir.mkdirs();
@@ -104,9 +106,17 @@ public AnswerSheet saveOnly(MultipartFile file, Long teacherId, String studentNa
 
             // Save
             sheet.setExtractedText(text);
-            sheet.setScore(result.getScore());
-            sheet.setSimilarity(result.getSimilarity());
-            sheet.setFeedback(result.getFeedback());
+            //sheet.setScore(result.getScore());
+            Map<String, Object> aiResult = ollamaService.generateFeedback(
+            studentAnswer,
+            modelAnswer
+            );
+
+            sheet.setScore((Integer) aiResult.get("finalScore"));
+            sheet.setSimilarity(Double.valueOf((Integer) aiResult.get("similarityScore")));
+            sheet.setLlmScore((Integer) aiResult.get("llmScore"));            sheet.setFeedback((String) aiResult.get("feedback"));
+            //sheet.setSimilarity(result.getSimilarity());
+            //sheet.setFeedback(result.getFeedback());
             sheet.setStatus("PROCESSED");
 
             repository.save(sheet);
