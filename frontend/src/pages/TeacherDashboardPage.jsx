@@ -9,6 +9,10 @@ import { createQuestion, getQuestions } from "../api/questionApi";
 import { getStoredUser, logoutUser } from "../utils/auth";
 import { useNavigate } from "react-router-dom";
 import "../styles/TeacherDashboardPage.css";
+import {
+  BarChart, Bar, XAxis, YAxis, Tooltip,
+  ResponsiveContainer, PieChart, Pie, Cell, Legend
+} from "recharts";
 
 const TeacherDashboardPage = () => {
   const navigate = useNavigate();
@@ -41,6 +45,16 @@ const TeacherDashboardPage = () => {
     fetchData(user.id);
     fetchQuestions();
   }, []);
+  useEffect(() => {
+  if (!teacherId) return;
+
+  const interval = setInterval(() => {
+    fetchData(teacherId);
+  }, 3000);
+
+  return () => clearInterval(interval);
+}, [teacherId]);
+
 
   const fetchData = async (id) => {
     setUploads(await getUploadsByTeacherId(id));
@@ -109,7 +123,10 @@ const TeacherDashboardPage = () => {
         <button className={active==="model"?"active":""} onClick={()=>setActive("model")}>Create Model</button>
         <button className={active==="upload"?"active":""} onClick={()=>setActive("upload")}>Upload</button>
         <button className={active==="sheets"?"active":""} onClick={()=>setActive("sheets")}>Uploaded Sheets</button>
-
+        <button className={active==="results"?"active":""} onClick={()=>setActive("results")}
+>
+  Results
+</button>
         <button className="logout" onClick={handleLogout}>Logout</button>
       </div>
 
@@ -124,22 +141,57 @@ const TeacherDashboardPage = () => {
 
           {message && <p className="message">{message}</p>}
 
-          {/* OVERVIEW */}
-          {active === "overview" && (
-            <div className="card">
-              <h3>SmartScan AI Evaluation</h3>
-              <p className="desc">
-                Evaluate answer sheets automatically using AI. Upload student sheets,
-                extract text (OCR), compare with model answers, and generate scores
-                with feedback instantly.
-              </p>
+      {/* OVERVIEW */}
+{active === "overview" && (
+  <>
+    {/* EXISTING CARD (UNCHANGED) */}
+    <div className="card">
+      <h3>SmartScan AI Evaluation</h3>
+      <p className="desc">
+        Evaluate answer sheets automatically using AI. Upload student sheets,
+        extract text (OCR), compare with model answers, and generate scores
+        with feedback instantly.
+      </p>
 
-              <div className="stat-box">
-                <p>Total Uploads</p>
-                <h2>{uploadCount}</h2>
-              </div>
-            </div>
-          )}
+      <div className="stat-box">
+        <p>Total Uploads</p>
+        <h2>{uploadCount}</h2>
+      </div>
+    </div>
+
+    {/* ✅ NEW ANALYTICS (ADDED BELOW) */}
+    <div className="analytics-grid">
+
+      <div className="analytics-card">
+        <h4>Average Score</h4>
+        <h2>
+          {uploads.length > 0
+            ? (uploads.reduce((sum, u) => sum + (u.score || 0), 0) / uploads.length).toFixed(1)
+            : "0"}
+        </h2>
+      </div>
+
+      <div className="analytics-card">
+        <h4>Avg Similarity</h4>
+        <h2>
+          {uploads.length > 0
+            ? (uploads.reduce((sum, u) => sum + (u.similarity || 0), 0) / uploads.length).toFixed(1)
+            : "0"}
+        </h2>
+      </div>
+
+      <div className="analytics-card">
+        <h4>Top Score</h4>
+        <h2>
+          {uploads.length > 0
+            ? Math.max(...uploads.map(u => u.score || 0))
+            : "0"}
+        </h2>
+      </div>
+
+    </div>
+  </>
+)}
 
           {/* CREATE MODEL */}
           {active === "model" && (
@@ -181,7 +233,67 @@ const TeacherDashboardPage = () => {
               </form>
             </div>
           )}
+{/* RESULTS TABLE */}
+{active === "results" && (
+  <div className="card">
+    <h2>Evaluation Results</h2>
 
+    <table className="upload-table">
+      <thead>
+        <tr >
+          <th>ID</th>
+          <th>Student Name</th>
+          <th>Final Score</th>
+          <th>AI Score</th>
+          <th>Similarity</th>
+          <th>Feedback</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {uploads.map((u) => (
+          <tr key={u.id}>
+            <td>{u.id}</td>
+            <td>{u.studentName}</td>
+            <td style={{ color: u.score >= 5 ? "green" : "red" }}>
+            {u.score ?? "N/A"}
+            </td>            
+            <td>{u.llmScore ?? "N/A"}</td>
+            <td>
+              {u.similarity !== null && u.similarity !== undefined
+                ? u.similarity.toFixed(2)
+                : "N/A"}
+            </td>
+            <td>
+  {u.feedback
+    ? u.feedback.substring(0, 60) + "..."
+    : "N/A"}
+
+  <br />
+
+  
+  <button
+  onClick={() => navigate(`/evaluation-result/${u.id}`)}
+  style={{
+    marginTop: "5px",
+    fontSize: "12px",
+    padding: "4px 10px",
+    borderRadius: "6px",
+    border: "1px solid #2563eb",
+    backgroundColor: "#eff6ff",
+    color: "#2563eb",
+    cursor: "pointer"
+  }}
+>
+  View
+</button>
+</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+)}
           {/* TABLE */}
           {active === "sheets" && (
             <div className="card">

@@ -14,4 +14,5 @@ public class EvaluationResultResponseDto {
     private String status;
     private Double similarity;
     private String feedback;
+    private Integer llmScore;
 }

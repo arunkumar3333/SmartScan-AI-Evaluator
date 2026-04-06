@@ -14,44 +14,30 @@ public class ImageProcessingService {
 
     public File preprocess(File file) {
 
-<<<<<<< HEAD
-        // Load OpenCV
-        OpenCV.loadLocally();
-
-        // Read image
-=======
-        // ✅ Load OpenCV
+        // ✅ Load OpenCV ONCE
         OpenCV.loadLocally();
 
         // ✅ Read image
->>>>>>> dev1
         Mat img = Imgcodecs.imread(file.getAbsolutePath());
 
         if (img.empty()) {
             throw new RuntimeException("Failed to load image: " + file.getAbsolutePath());
         }
 
-<<<<<<< HEAD
-        // STEP 1: Convert to Grayscale
-        Imgproc.cvtColor(img, img, Imgproc.COLOR_BGR2GRAY);
+        // ============================
+        // IMAGE PREPROCESSING PIPELINE
+        // ============================
 
-        // STEP 2: Noise Reduction (Blur)
-        Imgproc.GaussianBlur(img, img, new Size(3, 3), 0);
-
-        // STEP 3: Save processed image
-        String outputPath = System.getProperty("user.dir") +
-                "/uploads/processed_" + System.currentTimeMillis() + ".png";
-=======
         // 1️⃣ Convert to grayscale
         Imgproc.cvtColor(img, img, Imgproc.COLOR_BGR2GRAY);
 
-        // 2️⃣ Resize (VERY IMPORTANT for handwritten text)
+        // 2️⃣ Resize (important for OCR accuracy)
         Imgproc.resize(img, img, new Size(img.width() * 2, img.height() * 2));
 
-        // 3️⃣ Light blur (reduce noise)
+        // 3️⃣ Noise reduction
         Imgproc.GaussianBlur(img, img, new Size(3, 3), 0);
 
-        // 4️⃣ Adaptive threshold (BEST for handwriting)
+        // 4️⃣ Adaptive threshold (best for handwritten text)
         Imgproc.adaptiveThreshold(
                 img,
                 img,
@@ -61,10 +47,14 @@ public class ImageProcessingService {
                 11,
                 2
         );
->>>>>>> dev1
 
-        // ✅ Save processed image
-        String outputPath = System.getProperty("user.dir") + "/uploads/processed_" + System.currentTimeMillis() + ".png";
+        // ============================
+        // SAVE PROCESSED IMAGE
+        // ============================
+
+        String outputPath = System.getProperty("user.dir")
+                + "/uploads/processed_" + System.currentTimeMillis() + ".png";
+
         File output = new File(outputPath);
 
         Imgcodecs.imwrite(output.getAbsolutePath(), img);

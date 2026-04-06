@@ -5,6 +5,7 @@ import com.smartscan.backend.entity.AnswerSheet;
 import com.smartscan.backend.repository.AnswerSheetRepository;
 import com.smartscan.backend.repository.QuestionRepository;
 import com.smartscan.backend.service.ocr.OcrService;
+import com.smartscan.backend.service.ai.OllamaService;
 import com.smartscan.backend.util.PDFUtil;
 
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,8 @@ import java.io.File;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
 @Service
 @RequiredArgsConstructor
 public class ProcessingService {
@@ -23,19 +26,15 @@ public class ProcessingService {
     private final GraderService graderService;
     private final AnswerSheetRepository repository;
     private final OcrService ocrService;
-<<<<<<< HEAD
-    private final GraderService graderService;
-
-    // ============================
-    // STEP 1: UPLOAD ONLY
-    // ============================
-    public AnswerSheet saveOnly(MultipartFile file, Long teacherId, String studentName) throws Exception {
-=======
-    private final ImageProcessingService imageService; // ✅ FIXED
+    private final ImageProcessingService imageService;
     private final QuestionRepository questionRepository;
->>>>>>> dev1
+    private final OllamaService ollamaService;
 
-public AnswerSheet saveOnly(MultipartFile file, Long teacherId, String studentName, Long questionId) throws Exception {
+    // ============================
+    // STEP 1: SAVE + TRIGGER ASYNC
+    // ============================
+    public AnswerSheet saveOnly(MultipartFile file, Long teacherId, String studentName, Long questionId) throws Exception {
+
         if (file == null || file.isEmpty()) {
             throw new RuntimeException("File is missing or empty");
         }
@@ -65,17 +64,18 @@ public AnswerSheet saveOnly(MultipartFile file, Long teacherId, String studentNa
                 .uploadTime(LocalDateTime.now())
                 .build();
 
-                processAsync(sheet.getId());
-        return repository.save(sheet);
-        
+        // ✅ SAVE FIRST
+        AnswerSheet saved = repository.save(sheet);
+
+        // ✅ THEN TRIGGER ASYNC
+        processAsync(saved.getId());
+
+        return saved;
     }
 
-<<<<<<< HEAD
     // ============================
-    // STEP 2: BACKGROUND PROCESSING
+    // STEP 2: ASYNC PROCESSING
     // ============================
-=======
->>>>>>> dev1
     @Async
     public void processAsync(Long sheetId) {
 
@@ -89,62 +89,44 @@ public AnswerSheet saveOnly(MultipartFile file, Long teacherId, String studentNa
             File savedFile = new File(sheet.getFilePath());
 
             // PDF → Image
-            File fileToProcess;
+            File fileToProcess = savedFile;
             if (sheet.getFileName().toLowerCase().endsWith(".pdf")) {
                 fileToProcess = PDFUtil.convertPdfToImage(savedFile);
-            } else {
-                fileToProcess = savedFile;
             }
 
-<<<<<<< HEAD
-            // OCR
-            String text = ocrService.extractText(fileToProcess);
-            if (text == null) text = "";
-
-            // SEGMENT answers
-            List<String> answers = segment(text);
-
-            // AI Evaluation
-            String modelAnswer = "Artificial Intelligence is the simulation of human intelligence in machines.";
-=======
-            // ✅ PREPROCESS + OCR
+            // ✅ PREPROCESS
             File processedFile = imageService.preprocess(fileToProcess);
-            String text = ocrService.extractText(processedFile);
 
+            // ✅ OCR
+            String text = ocrService.extractText(processedFile);
             if (text == null) text = "";
 
             // ✅ CLEAN TEXT
             text = text.replaceAll("[^a-zA-Z0-9\\s]", " ");
             text = text.replaceAll("\\s+", " ").trim();
 
-            // Segmentation
+            // ✅ SEGMENT
             List<String> answers = segment(text);
-
             String studentAnswer = String.join(" ", answers);
->>>>>>> dev1
 
-            //String modelAnswer = "Artificial Intelligence is the simulation of human intelligence in machines.";
+            // ✅ GET MODEL ANSWER FROM DB
             String modelAnswer = questionRepository
-        .findById(sheet.getQuestionId())
-        .orElseThrow(() -> new RuntimeException("Question not found"))
-        .getModelAnswer();
-            // AI grading
-            GradingResult result = graderService.evaluate(studentAnswer, modelAnswer);
+                    .findById(sheet.getQuestionId())
+                    .orElseThrow(() -> new RuntimeException("Question not found"))
+                    .getModelAnswer();
 
-<<<<<<< HEAD
-            for (String ans : answers) {
-                GradingResult result = graderService.evaluate(ans, modelAnswer);
-                totalScore += result.getScore();
-            }
+            // ✅ AI RESULT (OLLAMA)
+            Map<String, Object> aiResult = ollamaService.generateFeedback(
+                    studentAnswer,
+                    modelAnswer
+            );
 
-            // SAVE
-=======
-            // Save
->>>>>>> dev1
+            // ✅ SAVE RESULTS
             sheet.setExtractedText(text);
-            sheet.setScore(result.getScore());
-            sheet.setSimilarity(result.getSimilarity());
-            sheet.setFeedback(result.getFeedback());
+            sheet.setScore((Integer) aiResult.get("finalScore"));
+            sheet.setSimilarity(Double.valueOf((Integer) aiResult.get("similarityScore")));
+            sheet.setLlmScore((Integer) aiResult.get("llmScore"));
+            sheet.setFeedback((String) aiResult.get("feedback"));
             sheet.setStatus("PROCESSED");
 
             repository.save(sheet);
@@ -160,45 +142,9 @@ public AnswerSheet saveOnly(MultipartFile file, Long teacherId, String studentNa
         }
     }
 
-<<<<<<< HEAD
     // ============================
-    // STEP 3: PROCESS API (USED IN POSTMAN)
+    // STEP 3: SEGMENTATION
     // ============================
-    public String process(Long answerSheetId) {
-
-        try {
-            AnswerSheet sheet = repository.findById(answerSheetId)
-                    .orElseThrow(() -> new RuntimeException("Answer sheet not found"));
-
-            String text = sheet.getExtractedText();
-
-            if (text == null || text.isEmpty()) {
-                text = ocrService.extractText(new File(sheet.getFilePath()));
-            }
-
-            String modelAnswer = "Artificial Intelligence is the simulation of human intelligence in machines.";
-
-            GradingResult result = graderService.evaluate(text, modelAnswer);
-
-            sheet.setScore(result.getScore());
-            sheet.setStatus("PROCESSED");
-
-            repository.save(sheet);
-
-            return "Score: " + result.getScore()
-                    + "\nFeedback: " + result.getFeedback()
-                    + "\nSimilarity: " + Math.round(result.getSimilarity() * 100) + "%";
-
-        } catch (Exception e) {
-            throw new RuntimeException("Processing failed: " + e.getMessage());
-        }
-    }
-
-    // ============================
-    // SEGMENTATION LOGIC
-    // ============================
-=======
->>>>>>> dev1
     public List<String> segment(String text) {
 
         List<String> answers = new ArrayList<>();
