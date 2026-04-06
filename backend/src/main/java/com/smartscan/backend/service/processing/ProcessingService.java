@@ -97,10 +97,13 @@ public AnswerSheet saveOnly(MultipartFile file, Long teacherId, String studentNa
             String studentAnswer = String.join(" ", answers);
 
             //String modelAnswer = "Artificial Intelligence is the simulation of human intelligence in machines.";
-            String modelAnswer = questionRepository
-        .findById(sheet.getQuestionId())
-        .orElseThrow(() -> new RuntimeException("Question not found"))
-        .getModelAnswer();
+           var question = questionRepository
+    .findById(sheet.getQuestionId())
+    .orElseThrow(() -> new RuntimeException("Question not found"));
+
+String modelAnswer = question.getModelAnswer();
+
+sheet.setModelName(question.getTitle());
             // AI grading
             GradingResult result = graderService.evaluate(studentAnswer, modelAnswer);
 

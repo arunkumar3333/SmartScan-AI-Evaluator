@@ -299,4 +299,34 @@ select:focus {
 .chart-card h4 {
   text-align: center;
   margin-bottom: 10px;
+}.analytics-card:nth-child(1) {
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+}
+.analytics-card:nth-child(2) {
+  background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+}
+.analytics-card:nth-child(3) {
+  background: linear-gradient(135deg, #22c55e, #15803d);
+}
+.sidebar {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar .logout {
+  margin-top: auto;
+}
+.sidebar {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar button:last-child {
+  margin-top: auto;
+  margin-bottom: 20px;
+}
+.sidebar {
+  overflow-y: auto;
 }

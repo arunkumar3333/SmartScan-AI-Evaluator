@@ -26,9 +26,10 @@ public class UploadController {
     public ResponseEntity<UploadResponseDto> uploadFile(
             @RequestParam("file") MultipartFile file,
             @RequestParam("teacherId") Long teacherId,
-            @RequestParam("studentName") String studentName
+            @RequestParam("studentName") String studentName,
+            @RequestParam("questionId") Long questionId
     ) {
-        UploadResponseDto response = uploadService.uploadFile(file, teacherId, studentName);
+        UploadResponseDto response = uploadService.uploadFile(file, teacherId, studentName, questionId);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 

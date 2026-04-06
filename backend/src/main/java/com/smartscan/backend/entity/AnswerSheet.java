@@ -21,7 +21,8 @@ public class AnswerSheet {
     private Long questionId;
     private Long teacherId;
     private String studentName;
-
+    private String modelName;
+    
     // ✅ AI fields (ONLY ONCE)
     private Integer score;
     private Integer llmScore;

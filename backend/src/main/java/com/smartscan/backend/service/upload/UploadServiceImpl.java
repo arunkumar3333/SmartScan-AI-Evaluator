@@ -4,7 +4,7 @@ import com.smartscan.backend.dto.UploadResponseDto;
 import com.smartscan.backend.entity.AnswerSheet;
 import com.smartscan.backend.repository.AnswerSheetRepository;
 import com.smartscan.backend.repository.UserRepository;
-
+import com.smartscan.backend.repository.QuestionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,9 +26,9 @@ public class UploadServiceImpl implements UploadService {
     private final AnswerSheetRepository answerSheetRepository;
     private static final String UPLOAD_DIR = "uploads";
     private final UserRepository userRepository;
-
+    private final QuestionRepository questionRepository;
     @Override
-public UploadResponseDto uploadFile(MultipartFile file, Long teacherId, String studentName) {
+public UploadResponseDto uploadFile(MultipartFile file, Long teacherId, String studentName, Long questionId) {
     try {
         if (file == null || file.isEmpty()) {
             throw new RuntimeException("File is empty");
@@ -51,15 +51,24 @@ public UploadResponseDto uploadFile(MultipartFile file, Long teacherId, String s
 
             Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
-            AnswerSheet answerSheet = AnswerSheet.builder()
-                    .teacherId(teacherId)
-                    .studentName(studentName)
-                    .fileName(originalFileName)
-                    .fileType(file.getContentType())
-                    .filePath(filePath.toString())
-                    .status("UPLOADED")
-                    .uploadTime(LocalDateTime.now())
-                    .build();
+            // ✅ GET QUESTION
+var question = questionRepository.findById(questionId)
+    .orElseThrow(() -> new RuntimeException("Question not found"));
+
+// ✅ CREATE SHEET
+AnswerSheet answerSheet = AnswerSheet.builder()
+    .teacherId(teacherId)
+    .studentName(studentName)
+    .questionId(questionId)
+    .fileName(originalFileName)
+    .fileType(file.getContentType())
+    .filePath(filePath.toString())
+    .status("UPLOADED")
+    .uploadTime(LocalDateTime.now())
+    .build();
+
+// ✅ VERY IMPORTANT (YOU MISSED THIS)
+answerSheet.setModelName(question.getTitle());
 
             //User teacher = userRepository.findById(teacherId)
         //.orElseThrow(() -> new RuntimeException("Enter correct teacherId"));
@@ -124,7 +133,9 @@ public long countUploadsByTeacherId(Long teacherId) {
             .filePath(answerSheet.getFilePath())
             .status(answerSheet.getStatus())
             .uploadTime(answerSheet.getUploadTime())
-
+            .questionId(answerSheet.getQuestionId())
+            .modelName(answerSheet.getModelName())  
+            
             // ✅ FIXED
             .score(answerSheet.getScore())
             .llmScore(answerSheet.getLlmScore())
