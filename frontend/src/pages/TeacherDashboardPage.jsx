@@ -120,7 +120,6 @@ const TeacherDashboardPage = () => {
 const modelWiseData = Object.values(
   uploads.reduce((acc, u) => {
 
-    // ✅ USE THIS
     const modelName = u.modelName || "Unknown";
 
     if (!acc[modelName]) {
@@ -141,6 +140,7 @@ const modelWiseData = Object.values(
   ...m,
   avgScore: (m.totalScore / m.total).toFixed(1),
 }));
+
 // ✅ EXPORT CSV
 const exportCSV = () => {
   const rows = [
@@ -269,8 +269,14 @@ const exportModelPDF = (questionId) => {
     { name: "Fail", value: uploads.filter(u => (u.score || 0) < 5).length }
   ];
 
-  const COLORS = ["#22c55e", "#ef4444"];
-
+const COLORS = [
+  "#22c55e",
+  "#ef4444",
+  "#3b82f6",
+  "#f59e0b",
+  "#8b5cf6",
+  "#ec4899"
+];
   return (
     <div className="layout">
 
@@ -359,37 +365,80 @@ const exportModelPDF = (questionId) => {
               </div>
 
               {/* CHARTS */}
-              <div className="charts-grid">
-                <div className="chart-card">
-                  <h4>Student Scores</h4>
-                  <ResponsiveContainer width="100%" height={250}>
-                    <BarChart data={chartData} margin={{ top: 20, right: 250, left: 30, bottom: 50 }}>
-                      <XAxis 
-                      dataKey="name"
-                      angle={-30}
-                      textAnchor="end"
-                      interval={0}
-                      height={60}
-                      />
-                      <YAxis/>
-                      <Tooltip/>
-                      <Bar dataKey="score" fill="#3b82f6"/>
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
+             {/* CHARTS */}
+<div className="charts-grid">
 
-                <div className="chart-card">
-                  <h4>Pass vs Fail</h4>
-                  <ResponsiveContainer width="100%" height={250}>
-                    <PieChart>
-                      <Pie data={pieData} dataKey="value" outerRadius={80}>
-                        {pieData.map((_,i)=>(<Cell key={i} fill={COLORS[i]}/>))}
-                      </Pie>
-                      <Legend/>
-                    </PieChart>
-                  </ResponsiveContainer>
-                </div>
-              </div>
+  {/* STUDENT SCORES */}
+  <div className="chart-card">
+    <h4>Student Scores</h4>
+    <ResponsiveContainer width="100%" height={250}>
+      <BarChart data={chartData} margin={{ top: 20, right: 250, left: 30, bottom: 50 }}>
+        <XAxis
+          dataKey="name"
+          angle={-30}
+          textAnchor="end"
+          interval={0}
+          height={60}
+        />
+        <YAxis/>
+        <Tooltip/>
+        <Bar dataKey="score" fill="#3b82f6"/>
+      </BarChart>
+    </ResponsiveContainer>
+  </div>
+
+  {/* PASS vs FAIL */}
+  <div className="chart-card">
+    <h4>Pass vs Fail</h4>
+    <ResponsiveContainer width="100%" height={250}>
+      <PieChart>
+        <Pie data={pieData} dataKey="value" outerRadius={80}>
+          {pieData.map((_,i)=>(<Cell key={i} fill={COLORS[i]}/>))}
+        </Pie>
+        <Legend/>
+      </PieChart>
+    </ResponsiveContainer>
+  </div>
+
+  {/* 🔥 ADD THIS - MODEL DISTRIBUTION */}
+  <div className="chart-card">
+    <h4>Model Distribution</h4>
+    <ResponsiveContainer width="100%" height={250}>
+      <PieChart>
+        <Pie
+          data={modelWiseData.map(m => ({
+            name: m.model,
+            value: m.total
+          }))}
+          dataKey="value"
+          nameKey="name"
+          outerRadius={80}
+          label
+        >
+          {modelWiseData.map((_, i) => (
+            <Cell key={i} fill={COLORS[i % COLORS.length]} />
+          ))}
+        </Pie>
+        <Tooltip />
+        <Legend />
+      </PieChart>
+    </ResponsiveContainer>
+  </div>
+
+  {/* 🔥 ADD THIS - MODEL AVG SCORE */}
+  <div className="chart-card">
+    <h4>Avg Score per Model</h4>
+    <ResponsiveContainer width="100%" height={250}>
+      <BarChart data={modelWiseData}>
+        <XAxis dataKey="model" />
+        <YAxis />
+        <Tooltip />
+        <Bar dataKey="avgScore" fill="#6366f1" />
+      </BarChart>
+    </ResponsiveContainer>
+  </div>
+
+</div>
               {/* MODEL-WISE ANALYSIS */}
 <div className="card">
   <h3>Model-wise Analysis</h3>

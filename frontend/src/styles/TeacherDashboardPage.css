@@ -330,3 +330,16 @@ select:focus {
 .sidebar {
   overflow-y: auto;
 }
+
+.charts-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* ✅ 2 per row */
+  gap: 20px;
+  margin-top: 20px;
+}
+.chart-card {
+  background: #f9fafb;
+  padding: 15px;
+  border-radius: 12px;
+  height: 300px; /* keeps uniform size */
+}
