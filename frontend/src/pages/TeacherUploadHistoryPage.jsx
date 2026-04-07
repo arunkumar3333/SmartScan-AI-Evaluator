@@ -60,6 +60,7 @@ const TeacherUploadHistoryPage = () => {
           <button className="back-btn" onClick={() => navigate("/teacher-dashboard")}>
             Back
           </button>
+          
         </div>
 
         {message && <p className="history-message">{message}</p>}
