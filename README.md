@@ -5,100 +5,108 @@ An AI-powered answer sheet evaluation system that automatically analyzes student
 
 Tech Stack
 
+
 Frontend
 
-React.js
+-React.js
 
-HTML5
+-HTML5
 
-CSS3
+-CSS3
 
-JavaScript
+-JavaScript
+
 
 Backend
-Java
 
-Spring Boot
+-Java
 
-REST APIs
+-Spring Boot
+
+-REST APIs
+
 
 Database
 
-MySQL
+-MySQL
 
 AI / Processing Tools
-Ollama (LLM)
+
+
+-Ollama (LLM)
 
 Generates feedback and LLM-based score by comparing student and model answers
 
 
-OCR (Text Extraction)
+-OCR (Text Extraction)
 
 Extracts text from scanned answer sheets (PDF/Image)
 
 
-Tesseract OCR
+-Tesseract OCR
 
 Core engine used to convert images into text
 
 
-OpenCV
+-OpenCV
 
 Preprocesses images (noise removal, sharpening, grayscale) for better OCR accuracy
 
 
-Embedding Service
+-Embedding Service
 
 Converts text into vectors and calculates similarity between answers
 
 
 Features
 
-User Registration & Login (Admin & Teacher)
+-User Registration & Login (Admin & Teacher)
 
-Role-based access control
+-Role-based access control
 
-Upload student answer sheets (PDF/Image)
+-Upload student answer sheets (PDF/Image)
 
-OCR-based text extraction
+-OCR-based text extraction
 
-AI-based evaluation (LLM + similarity)
+-AI-based evaluation (LLM + similarity)
 
-Final score calculation
+-Final score calculation
 
-Feedback generation
+-Feedback generation
 
-Processing status tracking
+-Processing status tracking
 
-Dashboard & analytics
+-Dashboard & analytics
+
 
 ->How It Works
 
-Teacher logs in
 
-Creates model answer
+-Teacher logs in
 
-Uploads student answer sheet
+-Creates model answer
 
-System stores file
+-Uploads student answer sheet
 
-OCR extracts text using Tesseract
+-System stores file
 
-OpenCV preprocesses image for better accuracy
+-OCR extracts text using Tesseract
 
-Extracted text is cleaned
+-OpenCV preprocesses image for better accuracy
 
-Embedding service calculates similarity
+-Extracted text is cleaned
+
+-Embedding service calculates similarity
 
 Ollama (LLM) generates:
 
-Score
+-Score
 
-Feedback
+-Feedback
 
-Final score is calculated
+-Final score is calculated
 
-Results are stored and shown in dashboard
+-Results are stored and shown in dashboard
 
 
 Score Calculation
@@ -130,42 +138,85 @@ Async processing using @Async
 
 Background evaluation using thread pool
 
+
 Project Structure
+
 SmartScan-AI-Evaluator/
+
 │
+
 ├── backend/
+
 │   ├── controller/
+
 │   ├── service/
+
 │   ├── repository/
+
 │   ├── entity/
+
 │   └── config/
+
 │
+
 ├── frontend/
+
 │   ├── pages/
+
 │   ├── components/
+
 │   ├── api/
+
 │   ├── styles/
+
 │   └── App.js
+
 │
+
 └── uploads/
-▶️ How to Run
+
+
+How to Run
+
+
 1. Setup Database
+   
 CREATE DATABASE smartscan_db;
+
+
 2. Configure Backend
+
 spring.datasource.url=jdbc:mysql://localhost:3306/smartscan_db
+
 spring.datasource.username=root
+
 spring.datasource.password=your_password
+
+
 3. Run Backend
+
 cd backend
+
 mvn spring-boot:run
+
+
 4. Run Frontend
+
 cd frontend
-npm install
-npm start
+npm run dev
+
+
 5. Open Browser
+
 http://localhost:3000
-🔄 Workflow
+
+
+Workflow
+
 Login → Create Model → Upload Sheet  
+
 → OCR → Text Extraction  
+
 → AI Evaluation (Ollama + Embedding)  
+
 → Score + Feedback → Dashboard
