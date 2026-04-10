@@ -79,6 +79,59 @@ Features
 -Dashboard & analytics
 
 
+Screenshots
+
+
+Index Page
+
+<img width="1877" height="847" alt="image" src="https://github.com/user-attachments/assets/e9e45d23-1e66-4d70-aabc-e7b990766db6" />
+
+
+Registration Page
+
+<img width="1207" height="812" alt="image" src="https://github.com/user-attachments/assets/8560d41c-1f40-4344-98fe-c175794a4f7d" />
+
+
+Login Page
+
+<img width="1833" height="828" alt="image" src="https://github.com/user-attachments/assets/2ef0c09a-ed43-409e-8d6f-cba932ad20b4" />
+
+
+Teacher Dashboard
+
+<img width="1892" height="870" alt="image" src="https://github.com/user-attachments/assets/181efda2-17a6-4bdb-a766-f06820006123" />
+
+
+Admin Dashboard
+
+<img width="1877" height="807" alt="image" src="https://github.com/user-attachments/assets/fcf83b60-af8d-462a-883b-43b225525eee" />
+
+
+Create Model
+
+<img width="1776" height="747" alt="image" src="https://github.com/user-attachments/assets/56a3bb3e-17a9-4644-8c98-a85968feea8c" />
+
+
+Upload Answer Sheets
+
+<img width="1807" height="772" alt="image" src="https://github.com/user-attachments/assets/402452b6-4dd4-48ac-b3dc-c3ab2f4ee5a9" />
+
+
+Evaluation Page
+
+<img width="1280" height="871" alt="image" src="https://github.com/user-attachments/assets/42177a83-19bc-479e-849f-8148f672cb9a" />
+
+
+Uploaded Answer Sheets
+
+<img width="1900" height="797" alt="image" src="https://github.com/user-attachments/assets/a3e3f8a6-0147-477d-a0c5-41742028f18f" />
+
+
+Result Page
+
+<img width="1900" height="867" alt="image" src="https://github.com/user-attachments/assets/ef66b99f-8c63-4bdc-b56b-f3565c9d2fc5" />
+
+
 ->How It Works
 
 
