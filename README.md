@@ -1,56 +1,64 @@
 # SmartScan-AI-Evaluator
 SmartScan AI Evaluator is a web-based system that uses OCR and Generative AI to automatically evaluate both objective and handwritten subjective exam answers with semantic understanding.  It reduces manual effort, eliminates bias, and provides consistent, instant feedback to students.
-
 An AI-powered answer sheet evaluation system that automatically analyzes student responses, compares them with model answers, and generates scores, similarity, and feedback using OCR and AI techniques.
+🚀 Tech Stack
+🎨 Frontend
+React.js
 
-Tech Stack
+HTML5
 
+CSS3
 
--Frontend
--React.js
--HTML5
--CSS3
--JavaScript
+JavaScript
 
+⚙️ Backend
+Java
 
-Backend
--Java
--Spring Boot
--REST APIs
+Spring Boot
 
-Database
--PostgreSQL
+REST APIs
 
+🗄️ Database
+MySQL
 
-AI / Processing Tools
--Ollama (LLM)
-Generates feedback and LLM-based score by comparing student and model answers
+🧠 AI / Processing Tools
+Ollama (LLM)
+👉 Generates feedback and LLM-based score by comparing student and model answers
 
--OCR (Text Extraction)
-Extracts text from scanned answer sheets (PDF/Image)
+OCR (Text Extraction)
+👉 Extracts text from scanned answer sheets (PDF/Image)
 
--Tesseract OCR
-Core engine used to convert images into text
+Tesseract OCR
+👉 Core engine used to convert images into text
 
--OpenCV
-Preprocesses images (noise removal, sharpening, grayscale) for better OCR accuracy
+OpenCV
+👉 Preprocesses images (noise removal, sharpening, grayscale) for better OCR accuracy
 
--Embedding Service
-Converts text into vectors and calculates similarity between answers
+Embedding Service
+👉 Converts text into vectors and calculates similarity between answers
 
-Features
--User Registration & Login (Admin & Teacher)
--Role-based access control
--Upload student answer sheets (PDF/Image)
--OCR-based text extraction
--AI-based evaluation (LLM + similarity)
--Final score calculation
--Feedback generation
--Processing status tracking
--Dashboard & analytics
+🎯 Features
+User Registration & Login (Admin & Teacher)
 
-->How It Works
+Role-based access control
+
+Upload student answer sheets (PDF/Image)
+
+OCR-based text extraction
+
+AI-based evaluation (LLM + similarity)
+
+Final score calculation
+
+Feedback generation
+
+Processing status tracking
+
+Dashboard & analytics
+
+🧠 How It Works
 Teacher logs in
+
 Creates model answer
 
 Uploads student answer sheet
@@ -75,7 +83,7 @@ Final score is calculated
 
 Results are stored and shown in dashboard
 
-Score Calculation
+📊 Score Calculation
 Similarity Score = similarity × 10  
 Final Score = (LLM Score + Similarity Score) / 2
 🔌 APIs Used
