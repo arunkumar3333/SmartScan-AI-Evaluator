@@ -276,3 +276,11 @@ Login → Create Model → Upload Sheet
 → AI Evaluation (Ollama + Embedding)  
 
 → Score + Feedback → Dashboard
+
+
+Conclusion
+
+The SmartScan AI Evaluator successfully automates the evaluation of student answer sheets by combining OCR, image processing, and AI techniques.
+
+
+By using tools like Tesseract, OpenCV, embeddings, and Ollama, the system ensures accurate text extraction, meaningful comparison, and intelligent feedback generation.
