@@ -15,7 +15,7 @@ public class OcrServiceImpl implements OcrService {
     private final AnswerSheetRepository answerSheetRepository;
     private final Tesseract tesseract;
 
-    // ✅ Apply config ONCE (constructor or init)
+    // Apply config ONCE (constructor or init)
     private void configureTesseract() {
         tesseract.setPageSegMode(1); // automatic segmentation
         tesseract.setOcrEngineMode(3); // best engine
@@ -37,7 +37,7 @@ public class OcrServiceImpl implements OcrService {
     @Override
     public String extractText(File file) throws Exception {
 
-        configureTesseract(); // ✅ IMPORTANT
+        configureTesseract(); //IMPORTANT
 
         return tesseract.doOCR(file);
     }

@@ -12,13 +12,13 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/upload")
-@RequiredArgsConstructor
-@CrossOrigin(origins = "*")
+@RequestMapping("/api/upload") //So ALL APIs start with:
+@RequiredArgsConstructor    // Automatically creates constructor
+@CrossOrigin(origins = "*") //Allows frontend (React) to call backend
 public class UploadController {
 
     private final UploadService uploadService;
-
+    //Accepts file + form data and returns JSON response
     @PostMapping(
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE

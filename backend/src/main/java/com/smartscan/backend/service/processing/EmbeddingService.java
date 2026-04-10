@@ -12,7 +12,7 @@ public class EmbeddingService {
     private final RestTemplate restTemplate = new RestTemplate();
 
     public double calculateSimilarity(String text1, String text2) {
-
+        // converting text into numbers so computer can understand meaning
         List<Double> emb1 = getEmbedding(text1);
         List<Double> emb2 = getEmbedding(text2);
 

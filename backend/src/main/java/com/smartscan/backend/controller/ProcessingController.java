@@ -20,7 +20,7 @@ public class ProcessingController {
     private final ProcessingService processingService;
     private final AnswerSheetRepository answerSheetRepository;
 
-    // ✅ SINGLE FILE UPLOAD (FINAL)
+    // SINGLE FILE UPLOAD (FINAL)
     @PostMapping("/upload")
     public ProcessingResponseDto upload(
             @RequestParam("file") MultipartFile file,
@@ -33,13 +33,13 @@ public class ProcessingController {
             throw new RuntimeException("File is empty");
         }
 
-        // ✅ Save file only
+        // Save file only
         AnswerSheet sheet = processingService.saveOnly(file, teacherId, studentName, questionId);
 
-        // ✅ Trigger async processing
+        // Trigger async processing
         processingService.processAsync(sheet.getId());
 
-        // ✅ Return response
+        // Return response
         return ProcessingResponseDto.builder()
                 .id(sheet.getId())
                 .fileName(sheet.getFileName())
@@ -47,7 +47,7 @@ public class ProcessingController {
                 .build();
     }
 
-    // ✅ CHECK PROCESSING STATUS
+    // CHECK PROCESSING STATUS
     @GetMapping("/status/{answerSheetId}")
     public ProcessingStatusResponseDto getProcessingStatus(@PathVariable Long answerSheetId) {
 

@@ -51,11 +51,11 @@ public UploadResponseDto uploadFile(MultipartFile file, Long teacherId, String s
 
             Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
-            // ✅ GET QUESTION
+            //GET QUESTION
 var question = questionRepository.findById(questionId)
     .orElseThrow(() -> new RuntimeException("Question not found"));
 
-// ✅ CREATE SHEET
+// CREATE SHEET
 AnswerSheet answerSheet = AnswerSheet.builder()
     .teacherId(teacherId)
     .studentName(studentName)
@@ -67,7 +67,6 @@ AnswerSheet answerSheet = AnswerSheet.builder()
     .uploadTime(LocalDateTime.now())
     .build();
 
-// ✅ VERY IMPORTANT (YOU MISSED THIS)
 answerSheet.setModelName(question.getTitle());
 
             //User teacher = userRepository.findById(teacherId)
@@ -136,7 +135,7 @@ public long countUploadsByTeacherId(Long teacherId) {
             .questionId(answerSheet.getQuestionId())
             .modelName(answerSheet.getModelName())  
             
-            // ✅ FIXED
+            // FIXED
             .score(answerSheet.getScore())
             .llmScore(answerSheet.getLlmScore())
             .similarity(answerSheet.getSimilarity())

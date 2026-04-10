@@ -61,16 +61,18 @@ public AnswerSheet saveOnly(MultipartFile file, Long teacherId, String studentNa
         return repository.save(sheet);
     }
 
-    @Async
+@Async("taskExecutor") //runs in background thread
     public void processAsync(Long sheetId) {
 
         try {
+
+        //gets uploaded file details from DB
             AnswerSheet sheet = repository.findById(sheetId)
                     .orElseThrow(() -> new RuntimeException("Answer sheet not found"));
 
             sheet.setStatus("PROCESSING");
             repository.save(sheet);
-
+            // Get actual file from storage
             File savedFile = new File(sheet.getFilePath());
 
             // PDF → Image
@@ -81,19 +83,24 @@ public AnswerSheet saveOnly(MultipartFile file, Long teacherId, String studentNa
                 fileToProcess = savedFile;
             }
 
-            // ✅ PREPROCESS + OCR
+            // PREPROCESS + OCR
+
+            //to Improve image quality (contrast, noise removal)
             File processedFile = imageService.preprocess(fileToProcess);
+            //OCR extracts text from image
             String text = ocrService.extractText(processedFile);
 
             if (text == null) text = "";
 
-            // ✅ CLEAN TEXT
+            // CLEAN TEXT
+            //Removes symbols extra spaces
             text = text.replaceAll("[^a-zA-Z0-9\\s]", " ");
             text = text.replaceAll("\\s+", " ").trim();
 
             // Segmentation
             List<String> answers = segment(text);
 
+            //final student answer
             String studentAnswer = String.join(" ", answers);
 
             //String modelAnswer = "Artificial Intelligence is the simulation of human intelligence in machines.";
@@ -101,6 +108,7 @@ public AnswerSheet saveOnly(MultipartFile file, Long teacherId, String studentNa
     .findById(sheet.getQuestionId())
     .orElseThrow(() -> new RuntimeException("Question not found"));
 
+    //Gets correct answer from DB
 String modelAnswer = question.getModelAnswer();
 
 sheet.setModelName(question.getTitle());
@@ -110,6 +118,8 @@ sheet.setModelName(question.getTitle());
             // Save
             sheet.setExtractedText(text);
             //sheet.setScore(result.getScore());
+
+            // AI returns: Score Feedback
             Map<String, Object> aiResult = ollamaService.generateFeedback(
             studentAnswer,
             modelAnswer

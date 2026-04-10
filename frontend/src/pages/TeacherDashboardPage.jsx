@@ -85,9 +85,9 @@ const TeacherDashboardPage = () => {
     setMessage("Model created successfully");
     fetchQuestions();
   };
-
-  const handleUpload = async (e) => {
-    e.preventDefault();
+    // This is a function that runs when user clicks Upload
+  const handleUpload = async (e) => { //async → allows using await for API calls
+    e.preventDefault(); //Stops page from refreshing
     if (!studentName || !file || !questionId)
       return setMessage("Fill all fields");
 
@@ -104,7 +104,7 @@ const TeacherDashboardPage = () => {
     setQuestionId("");
     setMessage("Upload successful");
 
-    fetchData(teacherId);
+    fetchData(teacherId);//Reloads latest uploads
 
     if (res?.id) navigate(`/processing-status/${res.id}`);
   };
@@ -115,8 +115,7 @@ const TeacherDashboardPage = () => {
     fetchData(teacherId);
   };
 
-  // ✅ MODEL-WISE ANALYSIS DATA
-// ✅ MODEL-WISE ANALYSIS DATA (USE THIS)
+  // MODEL-WISE ANALYSIS DATA
 const modelWiseData = Object.values(
   uploads.reduce((acc, u) => {
 
@@ -141,7 +140,7 @@ const modelWiseData = Object.values(
   avgScore: (m.totalScore / m.total).toFixed(1),
 }));
 
-// ✅ EXPORT CSV
+//EXPORT CSV
 const exportCSV = () => {
   const rows = [
     ["ID", "Name", "Score", "AI Score", "Similarity"],
@@ -230,35 +229,7 @@ const exportModelPDF = (questionId) => {
 
   doc.save(`model_${questionId}.pdf`);
 };
-// ✅ EXPORT SINGLE CSV
-// const exportSingleCSV = (u) => {
-//   const rows = [
-//     ["ID", "Name", "Score", "AI Score", "Similarity"],
-//     [u.id, u.studentName, u.score ?? "N/A", u.llmScore ?? "N/A", u.similarity ?? "N/A"]
-//   ];
-
-//   const csv =
-//     "data:text/csv;charset=utf-8," +
-//     rows.map(r => r.join(",")).join("\n");
-
-//   const link = document.createElement("a");
-//   link.href = encodeURI(csv);
-//   link.download = `result_${u.id}.csv`;
-//   link.click();
-// };
-
-// // ✅ EXPORT SINGLE PDF
-// const exportSinglePDF = (u) => {
-//   const doc = new jsPDF();
-
-//   autoTable(doc, {
-//     head: [["ID", "Name", "Score", "AI", "Similarity"]],
-//     body: [[u.id, u.studentName, u.score, u.llmScore, u.similarity]],
-//   });
-
-//   doc.save(`result_${u.id}.pdf`);
-// };
-  // 📊 CHART DATA
+  //CHART DATA
   const chartData = uploads.map(u => ({
     name: u.studentName,
     score: u.score || 0
@@ -364,15 +335,14 @@ const COLORS = [
                 </div>
               </div>
 
-              {/* CHARTS */}
-             {/* CHARTS */}
+  {/* CHARTS */}
 <div className="charts-grid">
 
   {/* STUDENT SCORES */}
   <div className="chart-card">
     <h4>Student Scores</h4>
     <ResponsiveContainer width="100%" height={250}>
-      <BarChart data={chartData} margin={{ top: 20, right: 250, left: 30, bottom: 50 }}>
+      <BarChart data={chartData} margin={{ top: 20, right: 50, left: 30, bottom: 30 }}>
         <XAxis
           dataKey="name"
           angle={-30}
@@ -400,7 +370,7 @@ const COLORS = [
     </ResponsiveContainer>
   </div>
 
-  {/* 🔥 ADD THIS - MODEL DISTRIBUTION */}
+  {/*ADD THIS - MODEL DISTRIBUTION */}
   <div className="chart-card">
     <h4>Model Distribution</h4>
     <ResponsiveContainer width="100%" height={250}>
@@ -425,7 +395,7 @@ const COLORS = [
     </ResponsiveContainer>
   </div>
 
-  {/* 🔥 ADD THIS - MODEL AVG SCORE */}
+  {/* ADD THIS - MODEL AVG SCORE */}
   <div className="chart-card">
     <h4>Avg Score per Model</h4>
     <ResponsiveContainer width="100%" height={250}>
@@ -560,8 +530,8 @@ const COLORS = [
 
       <input
         placeholder="Student Name"
-        value={studentName}
-        onChange={(e)=>setStudentName(e.target.value)}
+        value={studentName} 
+        onChange={(e)=>setStudentName(e.target.value)}////saves it in state (studentName)
       />
 
       <select
@@ -569,7 +539,7 @@ const COLORS = [
         onChange={(e)=>setQuestionId(e.target.value)}
       >
         <option value="">Select Model</option>
-        {questions.map((q)=>(
+        {questions.map((q)=>( //Loops through questions, Shows each as option
           <option key={q.id} value={q.id}>{q.title}</option>
         ))}
       </select>

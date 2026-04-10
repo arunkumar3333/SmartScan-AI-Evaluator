@@ -12,7 +12,7 @@ public class TesseractConfig {
 
         Tesseract tesseract = new Tesseract();
 
-        // 🔥 IMPORTANT: Set correct path
+        //IMPORTANT: Set correct path
         tesseract.setDatapath("C:/Program Files/Tesseract-OCR/tessdata");
 
         tesseract.setLanguage("eng");
