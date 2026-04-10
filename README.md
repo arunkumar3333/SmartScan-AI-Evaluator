@@ -87,6 +87,9 @@ Index Page
 <img width="1877" height="847" alt="image" src="https://github.com/user-attachments/assets/e9e45d23-1e66-4d70-aabc-e7b990766db6" />
 
 
+
+
+
 Registration Page
 
 <img width="1207" height="812" alt="image" src="https://github.com/user-attachments/assets/8560d41c-1f40-4344-98fe-c175794a4f7d" />
