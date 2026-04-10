@@ -4,7 +4,9 @@ SmartScan AI Evaluator is a web-based system that uses OCR and Generative AI to 
 An AI-powered answer sheet evaluation system that automatically analyzes student responses, compares them with model answers, and generates scores, similarity, and feedback using OCR and AI techniques.
 
 Tech Stack
+
 Frontend
+
 React.js
 
 HTML5
@@ -21,25 +23,37 @@ Spring Boot
 REST APIs
 
 Database
+
 MySQL
 
-🧠 AI / Processing Tools
+AI / Processing Tools
 Ollama (LLM)
-👉 Generates feedback and LLM-based score by comparing student and model answers
+
+Generates feedback and LLM-based score by comparing student and model answers
+
 
 OCR (Text Extraction)
-👉 Extracts text from scanned answer sheets (PDF/Image)
+
+Extracts text from scanned answer sheets (PDF/Image)
+
 
 Tesseract OCR
-👉 Core engine used to convert images into text
+
+Core engine used to convert images into text
+
 
 OpenCV
-👉 Preprocesses images (noise removal, sharpening, grayscale) for better OCR accuracy
+
+Preprocesses images (noise removal, sharpening, grayscale) for better OCR accuracy
+
 
 Embedding Service
-👉 Converts text into vectors and calculates similarity between answers
 
-🎯 Features
+Converts text into vectors and calculates similarity between answers
+
+
+Features
+
 User Registration & Login (Admin & Teacher)
 
 Role-based access control
@@ -58,7 +72,8 @@ Processing status tracking
 
 Dashboard & analytics
 
-🧠 How It Works
+->How It Works
+
 Teacher logs in
 
 Creates model answer
@@ -85,28 +100,37 @@ Final score is calculated
 
 Results are stored and shown in dashboard
 
-📊 Score Calculation
+
+Score Calculation
 Similarity Score = similarity × 10  
 Final Score = (LLM Score + Similarity Score) / 2
-🔌 APIs Used
+
+
+APIs Used
+
 Auth APIs
+
 POST /api/auth/register
 
 POST /api/auth/login
 
+
 Upload APIs
+
 POST /api/upload
 
 GET /api/upload/all
 
 GET /api/upload/teacher/{teacherId}
 
+
 Processing APIs
+
 Async processing using @Async
 
 Background evaluation using thread pool
 
-📁 Project Structure
+Project Structure
 SmartScan-AI-Evaluator/
 │
 ├── backend/
