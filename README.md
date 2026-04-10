@@ -5,11 +5,13 @@ An AI-powered answer sheet evaluation system that automatically analyzes student
 
 Tech Stack
 
+
 -Frontend
 -React.js
 -HTML5
 -CSS3
 -JavaScript
+
 
 Backend
 -Java
@@ -18,6 +20,7 @@ Backend
 
 Database
 -PostgreSQL
+
 
 AI / Processing Tools
 -Ollama (LLM)
