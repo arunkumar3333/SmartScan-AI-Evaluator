@@ -1,8 +1,10 @@
 # SmartScan-AI-Evaluator
 SmartScan AI Evaluator is a web-based system that uses OCR and Generative AI to automatically evaluate both objective and handwritten subjective exam answers with semantic understanding.  It reduces manual effort, eliminates bias, and provides consistent, instant feedback to students.
+
 An AI-powered answer sheet evaluation system that automatically analyzes student responses, compares them with model answers, and generates scores, similarity, and feedback using OCR and AI techniques.
-🚀 Tech Stack
-🎨 Frontend
+
+Tech Stack
+Frontend
 React.js
 
 HTML5
@@ -11,14 +13,14 @@ CSS3
 
 JavaScript
 
-⚙️ Backend
+Backend
 Java
 
 Spring Boot
 
 REST APIs
 
-🗄️ Database
+Database
 MySQL
 
 🧠 AI / Processing Tools
