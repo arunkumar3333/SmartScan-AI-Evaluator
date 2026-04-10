@@ -108,6 +108,8 @@ Teacher Dashboard
 Admin Dashboard
 
 <img width="1877" height="807" alt="image" src="https://github.com/user-attachments/assets/fcf83b60-af8d-462a-883b-43b225525eee" />
+<img width="1417" height="410" alt="image" src="https://github.com/user-attachments/assets/df913f5a-0285-488c-8fdd-e42d7062ad5a" />
+
 
 
 Create Model
