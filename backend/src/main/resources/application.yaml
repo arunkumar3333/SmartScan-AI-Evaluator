@@ -1,14 +1,14 @@
 server:
-  port: 8080
+  port: ${PORT:8080}
 
 spring:
   application:
     name: backend
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/smartscan_db
-    username: postgres
-    password: Postgres
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/smartscan_db}
+    username: ${DB_USER:postgres}
+    password: ${DB_PASS:Postgres}
     driver-class-name: org.postgresql.Driver
 
   jpa:
@@ -16,10 +16,6 @@ spring:
       ddl-auto: update
     show-sql: true
     open-in-view: false
-
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
 
   servlet:
     multipart:
