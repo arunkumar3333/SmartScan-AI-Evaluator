@@ -4,7 +4,8 @@ import com.smartscan.backend.service.processing.EmbeddingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,20 +21,25 @@ public class OllamaService {
         String url = "http://localhost:11434/api/generate";
         RestTemplate restTemplate = new RestTemplate();
 
-        String prompt = """
-                You are an AI exam evaluator.
+      String prompt = """
+You are an AI exam evaluator.
 
-                Compare the student answer with the model answer.
+Compare the student answer with the model answer.
 
-                Give output strictly in this format:
-                Score: <number out of 10>
-                Feedback: <clear explanation>
+Give output strictly in this format:
+Score: <number out of 10>
+Feedback: <max 4 lines only>
 
-                Student Answer:
-                """ + studentAnswer + """
+IMPORTANT:
+- Keep feedback short (max 4 lines)
+- Do NOT exceed 4 lines
+- Be clear and concise
 
-                Model Answer:
-                """ + modelAnswer;
+Student Answer:
+""" + studentAnswer + """
+
+Model Answer:
+""" + modelAnswer;
 
         // Creating Request data
         Map<String, Object> request = new HashMap<>();
@@ -47,15 +53,19 @@ public class OllamaService {
         String result = response.get("response").toString();
 
         // Extract LLM score
-        int llmScore = 5;
-        try {
-            // extracts LLM score from AI response text
-            llmScore = Integer.parseInt(
-                    result.split("Score:")[1]
-                          .split("/")[0]
-                          .trim()
-            );
-        } catch (Exception ignored) {}
+       Pattern pattern = Pattern.compile(
+    "Score\\s*:\\s*(\\d+)(?:\\s*/\\s*(\\d+)|\\s*out of\\s*(\\d+))?",
+    Pattern.CASE_INSENSITIVE
+);
+Matcher matcher = pattern.matcher(result);
+
+int llmScore = 5;
+
+if (matcher.find()) {
+    llmScore = Integer.parseInt(matcher.group(1));
+} else {
+    System.out.println("Score not found: " + result);
+}
 
         // Embedding similarity
         double similarity = embeddingService.calculateSimilarity(studentAnswer, modelAnswer);
