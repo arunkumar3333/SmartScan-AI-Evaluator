@@ -31,10 +31,13 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
 
         // configuration.setAllowedOrigins(List.of("http://localhost:5173"));
-         configuration.setAllowedOrigins(List.of(
-        "http://localhost:5173",
-        "https://your-netlify-site.netlify.app"
-        ));
+        configuration.setAllowedOriginPatterns(List.of(
+    "http://localhost:5173",
+    "https://smartscan-ai.netlify.app"
+));
+        configuration.setAllowedMethods(List.of("*"));
+        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setAllowCredentials(true);
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
@@ -46,7 +49,7 @@ public class SecurityConfig {
         return source;
     }
 
-    // ✅ SECURITY CONFIG
+    // SECURITY CONFIG
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
