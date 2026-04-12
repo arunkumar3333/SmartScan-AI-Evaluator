@@ -32,9 +32,10 @@ public class SecurityConfig {
 
         // configuration.setAllowedOrigins(List.of("http://localhost:5173"));
         configuration.setAllowedOriginPatterns(List.of(
-    "http://localhost:5173",
-    "https://smartscan-ai.netlify.app"
-));
+        "http://localhost:5173",
+        "https://smartscan-ai.netlify.app",
+        "https://*.netlify.app"
+        ));
         configuration.setAllowedMethods(List.of("*"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
