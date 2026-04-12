@@ -48,6 +48,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .cors(Customizer.withDefaults()) // enable CORS
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/", "/error").permitAll()   // to permit the rendering of the React app
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/process/**").permitAll()
                         .requestMatchers("/api/ocr/**").permitAll()
