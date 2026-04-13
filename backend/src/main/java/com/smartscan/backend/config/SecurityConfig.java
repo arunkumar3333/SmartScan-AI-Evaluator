@@ -33,7 +33,8 @@ public class SecurityConfig {
         // configuration.setAllowedOrigins(List.of("http://localhost:5173"));
         configuration.setAllowedOrigins(List.of(
         "http://localhost:5173",
-        "https://smartscan-ai.netlify.app"
+        "https://smartscan-ai.netlify.app",
+        "https://smart-scan-ai-evaluator-8js8mxb9a-arunkumar3333.vercel.app"
     ));
 
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
