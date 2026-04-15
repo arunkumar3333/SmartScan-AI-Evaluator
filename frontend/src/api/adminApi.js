@@ -1,6 +1,6 @@
 import axios from "axios";
-
-const ADMIN_API = "http://localhost:8080/api/admin";
+const ADMIN_API = `${import.meta.env.VITE_API_URL}/api/admin`;
+//const ADMIN_API = "http://localhost:8080/api/admin";
 
 // Get admin dashboard stats
 export const getAdminDashboardStats = async () => {
