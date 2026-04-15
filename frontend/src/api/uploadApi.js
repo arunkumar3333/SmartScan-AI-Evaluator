@@ -1,8 +1,11 @@
 import axios from "axios";
 
-const PROCESS_API = "http://localhost:8080/api/process";
-const UPLOAD_API = "http://localhost:8080/api/upload";
+// const PROCESS_API = "http://localhost:8080/api/process";
+// const UPLOAD_API = "http://localhost:8080/api/upload";
+const BASE_URL = import.meta.env.VITE_API_URL;
 
+const PROCESS_API = `${BASE_URL}/api/process`;
+const UPLOAD_API = `${BASE_URL}/api/upload`;
 //Upload (PROCESS)
 export const uploadAnswerSheet = async (formData) => {
                         //sends data to backend
@@ -14,7 +17,7 @@ export const uploadAnswerSheet = async (formData) => {
   return response.data;
 };
 export const getAllUploads = async () => {
-  const response = await axios.get("http://localhost:8080/api/upload/all");
+  const response = await axios.get(`${UPLOAD_API}/all`)
   return response.data;
 };
 // Dashboard (UPLOAD)
