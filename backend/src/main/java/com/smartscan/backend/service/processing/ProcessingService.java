@@ -62,10 +62,11 @@ public AnswerSheet saveOnly(MultipartFile file, Long teacherId, String studentNa
     }
 
 @Async("taskExecutor") //runs in background thread
+
     public void processAsync(Long sheetId) {
 
         try {
-
+        System.out.println("🔥 PROCESS STARTED: " + sheetId);
         //gets uploaded file details from DB
             AnswerSheet sheet = repository.findById(sheetId)
                     .orElseThrow(() -> new RuntimeException("Answer sheet not found"));
@@ -84,11 +85,13 @@ public AnswerSheet saveOnly(MultipartFile file, Long teacherId, String studentNa
             }
 
             // PREPROCESS + OCR
-
+            System.out.println("STEP 1: File loaded");
             //to Improve image quality (contrast, noise removal)
             File processedFile = imageService.preprocess(fileToProcess);
+            System.out.println("STEP 2: Image processed");
             //OCR extracts text from image
             String text = ocrService.extractText(processedFile);
+            System.out.println("STEP 3: OCR done");
 
             if (text == null) text = "";
 
@@ -115,6 +118,7 @@ sheet.setModelName(question.getTitle());
             // AI grading
             GradingResult result = graderService.evaluate(studentAnswer, modelAnswer);
 
+            System.out.println("STEP 4: BEFORE OLLAMA");
             // Save
             sheet.setExtractedText(text);
             //sheet.setScore(result.getScore());
@@ -124,17 +128,19 @@ sheet.setModelName(question.getTitle());
             studentAnswer,
             modelAnswer
             );
+            System.out.println("STEP 5: AFTER OLLAMA");
 
             sheet.setScore((Integer) aiResult.get("finalScore"));
             sheet.setSimilarity(Double.valueOf((Integer) aiResult.get("similarityScore")));
-            sheet.setLlmScore((Integer) aiResult.get("llmScore"));            sheet.setFeedback((String) aiResult.get("feedback"));
-            //sheet.setSimilarity(result.getSimilarity());
-            //sheet.setFeedback(result.getFeedback());
+            sheet.setLlmScore((Integer) aiResult.get("llmScore"));            
+            sheet.setFeedback((String) aiResult.get("feedback"));
+
             sheet.setStatus("PROCESSED");
 
             repository.save(sheet);
 
         } catch (Exception e) {
+            System.out.println("❌ ERROR: " + e.getMessage());
             e.printStackTrace();
 
             AnswerSheet sheet = repository.findById(sheetId).orElse(null);
