@@ -19,25 +19,28 @@ import java.util.List;
 @Configuration
 public class SecurityConfig {
 
-    // ✅ Password Encoder
+    // Password Encoder
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    // ✅ CORS CONFIG (IMPORTANT)
+    // CORS CONFIG (IMPORTANT)
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
         // configuration.setAllowedOrigins(List.of("http://localhost:5173"));
-       configuration.setAllowedOriginPatterns(List.of(
-        "http://localhost:5173",
-       // "https://smartscan-ai.netlify.app",
-        //"https://smart-scan-ai-evaluator-8js8mxb9a-arunkumar3333.vercel.app"
-        "https://*.vercel.app"
-    ));
-
+    //    configuration.setAllowedOriginPatterns(List.of(
+    //     "http://localhost:5173",
+    //    // "https://smartscan-ai.netlify.app",
+    //     //"https://smart-scan-ai-evaluator-8js8mxb9a-arunkumar3333.vercel.app"
+    //     "https://*.vercel.app"
+    // ));
+configuration.setAllowedOrigins(List.of(
+    "http://localhost:5173",
+    "https://smart-scan-ai-evaluator.vercel.app"
+));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
